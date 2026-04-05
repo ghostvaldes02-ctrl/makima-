@@ -3,619 +3,685 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>MAKIMA M-DX · Solution WhatsApp</title>
-  <meta name="description" content="Créez votre compte, vérifiez votre email et gérez votre appairage WhatsApp.">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <title>MAKIMA M-DX · Gestion WhatsApp</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    /* ========== VARIABLES ========== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     :root {
-      --bg: #ffffff;
-      --bg-secondary: #fff5f8;
-      --text: #1e0a16;
-      --text-muted: #6e4a5e;
+      --bg: #0a0c10;
+      --surface: #15181e;
+      --surface-hover: #1f232b;
+      --text: #eef2ff;
+      --text-muted: #8a8f9e;
       --accent: #ff2a6d;
-      --accent-light: #ff88b0;
-      --border: rgba(0, 0, 0, 0.05);
-      --card-bg: rgba(255, 255, 255, 0.8);
-      --shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
-      --transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-      --border-pink: rgba(255, 42, 109, 0.2);
+      --accent-glow: rgba(255, 42, 109, 0.3);
+      --border: #2a2e3a;
+      --card-bg: rgba(21, 24, 30, 0.8);
+      --shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      --success: #10b981;
     }
-    body.dark {
-      --bg: #1a0010;
-      --bg-secondary: #2a0018;
-      --text: #ffeef4;
-      --text-muted: #cc99b0;
-      --accent: #ff88b0;
-      --accent-light: #ffc0e0;
-      --border: rgba(255, 255, 255, 0.08);
-      --card-bg: rgba(255, 255, 255, 0.05);
-      --shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      --border-pink: rgba(255, 42, 109, 0.4);
+    body.light {
+      --bg: #f3f4f6;
+      --surface: #ffffff;
+      --surface-hover: #f9fafb;
+      --text: #111827;
+      --text-muted: #6b7280;
+      --border: #e5e7eb;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background: var(--bg);
       color: var(--text);
       font-family: 'Inter', sans-serif;
-      line-height: 1.5;
-      transition: var(--transition);
+      transition: background 0.2s, color 0.2s;
+      padding: 1rem;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
-    /* Effet 3D */
-    .perspective-wrapper { perspective: 1200px; transform-style: preserve-3d; }
-    .container { max-width: 900px; margin: 0 auto; position: relative; z-index: 2; transform: translateZ(30px); transition: transform 0.2s; }
-    .bg-3d { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; transform: translateZ(-80px) scale(1.2); transition: transform 0.15s; will-change: transform; }
-    .bg-3d::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 30% 20%, #ff2a6d20, #0a0008 90%); }
-    body.dark .bg-3d::before { background: radial-gradient(circle at 30% 20%, #ff2a6d20, #0a0008 90%); }
-    body:not(.dark) .bg-3d::before { background: radial-gradient(circle at 30% 20%, #ff2a6d10, #fff0f5 90%); }
-    .bg-3d::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, #ff2a6d08 0px, #ff2a6d08 2px, transparent 2px, transparent 8px); pointer-events: none; }
-    body::after { content: ""; position: fixed; inset: 0; background: radial-gradient(ellipse, #1a0010 0%, #050002 100%); opacity: 0.9; z-index: -1; }
-    body:not(.dark)::after { background: radial-gradient(ellipse, #fff0f5 0%, #ffe4ec 100%); opacity: 0.9; }
-
-    /* Navigation */
-    nav { display: flex; justify-content: center; gap: 1.5rem; margin-bottom: 1.5rem; transform: translateZ(20px); }
-    .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 600; padding: 0.5rem 1.5rem; border-radius: 60px; transition: var(--transition); backdrop-filter: blur(8px); background: rgba(255,42,109,0.1); border: 1px solid var(--border-pink); cursor: pointer; }
-    .nav-link:hover, .nav-link.active { background: var(--accent); color: #0a0005; transform: translateY(-3px) translateZ(15px); box-shadow: 0 8px 20px rgba(255,42,109,0.4); border-color: transparent; }
-
-    /* Cartes */
-    .glass-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--border);
-      border-radius: 32px;
-      padding: 1.5rem;
-      max-width: 900px;
+    .container {
+      max-width: 700px;
       margin: 0 auto;
-      box-shadow: var(--shadow);
-      transition: var(--transition);
-      animation: fadeUp 0.6s ease;
+      position: relative;
+      z-index: 2;
+      flex: 1;
     }
-    .glass-card:hover {
-      transform: translateY(-5px);
+    /* En-tête avec menu hamburger */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), #ff88b0);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    /* Menu hamburger */
+    .hamburger {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.5rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 40px;
+      align-items: center;
+      position: relative;
+      z-index: 1002;
+    }
+    .hamburger span {
+      width: 22px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: 0.2s;
+    }
+    /* Dropdown menu - sans flou */
+    .dropdown-menu {
+      position: fixed;
+      top: 70px;
+      right: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      min-width: 180px;
+      z-index: 1001;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: none;
+      pointer-events: auto;
+    }
+    .dropdown-menu a {
+      display: block;
+      padding: 0.8rem 1rem;
+      color: var(--text);
+      text-decoration: none;
+      transition: 0.1s;
+      cursor: pointer;
+    }
+    .dropdown-menu a:hover {
+      background: var(--surface-hover);
+      color: var(--accent);
+    }
+    .dropdown-menu.show {
+      display: block;
+    }
+    .theme-toggle {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 40px;
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    /* Cartes */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 1.2rem;
+      margin-bottom: 1.5rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
       border-color: var(--accent);
     }
-    .pairing-card, .profile-card { max-width: 520px; }
-    h1 { font-family: 'Poppins', sans-serif; font-size: 1.8rem; margin-bottom: 0.5rem; color: var(--accent); text-align: center; }
-    .sub { color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem; text-align: center; }
-    .input-group { margin-bottom: 1rem; }
-    label { display: block; margin-bottom: 0.4rem; font-weight: 500; color: var(--text); font-size: 0.85rem; }
-    input { width: 100%; padding: 0.8rem 1rem; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 60px; color: var(--text); font-size: 0.9rem; transition: var(--transition); outline: none; }
-    input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(255, 42, 109, 0.2); }
-    button { width: 100%; background: var(--accent); border: none; padding: 0.8rem 1rem; border-radius: 60px; font-weight: 600; font-size: 0.9rem; color: white; cursor: pointer; transition: var(--transition); }
-    button:hover { background: var(--accent-light); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 42, 109, 0.3); }
-    .code-result { margin-top: 1rem; padding: 0.8rem; background: var(--bg-secondary); border-radius: 28px; text-align: center; border: 1px solid var(--border); }
-    .code-number { font-size: 2rem; font-weight: bold; font-family: monospace; letter-spacing: 4px; color: var(--accent); word-break: break-all; }
-    .copy-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 0.4rem 0.8rem; width: auto; margin-top: 0.5rem; font-size: 0.75rem; }
-    .copy-btn:hover { background: var(--accent); color: white; }
-    .error-msg, .success-msg { margin-top: 0.8rem; font-size: 0.8rem; text-align: center; }
-    .error-msg { color: #e74c3c; }
-    .success-msg { color: #2ecc71; }
-    .loader { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 8px; vertical-align: middle; }
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .input-group {
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      margin-bottom: 0.3rem;
+      color: var(--text-muted);
+    }
+    input, button {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 60px;
+      color: var(--text);
+      font-size: 0.85rem;
+      outline: none;
+    }
+    input:focus {
+      border-color: var(--accent);
+    }
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+    button:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+    .code-result {
+      margin-top: 1rem;
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 0.8rem;
+      text-align: center;
+    }
+    .code-number {
+      font-size: 1.8rem;
+      letter-spacing: 4px;
+      font-weight: bold;
+      color: var(--accent);
+    }
+    .error-msg, .success-msg {
+      font-size: 0.75rem;
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+    .error-msg { color: #ef4444; }
+    .success-msg { color: var(--success); }
+    .status-badge {
+      display: inline-block;
+      background: var(--success);
+      padding: 0.2rem 0.6rem;
+      border-radius: 60px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      margin-left: 0.5rem;
+      animation: blink 1.2s infinite;
+    }
+    .preview-badge {
+      background: var(--accent);
+      animation: blinkPreview 1s infinite;
+      display: inline-block;
+      padding: 0.2rem 0.8rem;
+      border-radius: 60px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      margin-bottom: 0.6rem;
+      color: white;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; background-color: #2ecc71; }
+      50% { opacity: 0.6; background-color: #27ae60; }
+    }
+    @keyframes blinkPreview {
+      0%, 100% { opacity: 1; background-color: var(--accent); }
+      50% { opacity: 0.6; background-color: var(--accent-light, #ff88b0); }
+    }
+    .loader {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
     @keyframes spin { to { transform: rotate(360deg); } }
-    footer { text-align: center; padding: 1rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.7rem; margin-top: 1.5rem; }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
-    /* Images : taille augmentée sauf l'accueil */
-    .large-avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid var(--accent);
+    /* Effet illumination toggle */
+    .glow-active {
+      box-shadow: 0 0 0 2px var(--accent), 0 0 15px var(--accent-glow);
+      transition: 0.1s;
     }
-    .medium-avatar {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid var(--accent);
-    }
-    .small-avatar {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 1px solid var(--accent);
-    }
-    .home-image {
-      max-width: 220px;
-      border-radius: 28px;
-      border: 2px solid var(--accent);
-    }
-    .avatar-center { text-align: center; margin-bottom: 1rem; }
-    .flex-avatar-row {
+    .profile-row {
       display: flex;
       align-items: center;
       gap: 1rem;
       margin-bottom: 1rem;
       flex-wrap: wrap;
     }
-    /* Pastilles clignotantes */
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-      background: #2ecc71;
-      color: white;
-      padding: 0.3rem 0.8rem;
-      border-radius: 60px;
-      font-size: 0.75rem;
-      font-weight: bold;
-      animation: blink 1.2s infinite;
-    }
-    @keyframes blink {
-      0%, 100% { opacity: 1; background-color: #2ecc71; }
-      50% { opacity: 0.6; background-color: #27ae60; }
-    }
-    .creator-badge {
-      background: #f39c12;
-      animation: blinkCreator 1.2s infinite;
-    }
-    @keyframes blinkCreator {
-      0%, 100% { opacity: 1; background-color: #f39c12; }
-      50% { opacity: 0.7; background-color: #e67e22; }
-    }
-    .preview-badge {
-      background: var(--accent);
-      animation: blinkPreview 1s infinite;
-      display: inline-block;
-      padding: 0.3rem 1rem;
-      border-radius: 60px;
-      font-size: 0.7rem;
-      font-weight: bold;
-      margin-bottom: 0.8rem;
-      color: white;
-    }
-    @keyframes blinkPreview {
-      0%, 100% { opacity: 1; background-color: var(--accent); }
-      50% { opacity: 0.6; background-color: var(--accent-light); }
-    }
-    .user-info-card {
-      background: var(--bg-secondary);
-      border-radius: 60px;
-      padding: 0.8rem 1rem;
-      margin-bottom: 1.2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-    .logout-section {
-      margin-top: 1.5rem;
-      border-top: 1px solid var(--border);
-      padding-top: 1rem;
-    }
-    .logout-section h3 {
-      font-size: 0.9rem;
-      margin-bottom: 0.8rem;
-      color: var(--accent);
-      text-align: center;
-    }
-    .mini-btn {
-      background: transparent;
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      padding: 0.3rem 0.8rem;
-      font-size: 0.7rem;
-      width: auto;
-      display: inline-block;
-      margin-top: 0.5rem;
-      border-radius: 60px;
-      text-decoration: none;
-    }
-    .creator-info {
-      background: var(--bg-secondary);
-      border-radius: 60px;
-      padding: 0.8rem 1rem;
-      margin-bottom: 1.2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-    }
-    /* Effet d'illumination toggle */
-    .glass-card.glow-active {
-      box-shadow: 0 0 25px rgba(255, 42, 109, 0.7), 0 0 8px rgba(255, 42, 109, 0.9);
-      border-color: var(--accent);
-      transition: 0.1s;
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--accent);
     }
     .auth-tabs {
       display: flex;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 0.5rem;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
     }
-    .auth-tab {
-      flex: 1;
-      text-align: center;
-      padding: 0.5rem;
-      cursor: pointer;
-      border-radius: 60px;
-      transition: var(--transition);
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-    .auth-tab.active-tab { background: var(--accent); color: white; }
-    .auth-form { display: none; }
-    .auth-form.active-form { display: block; }
-    .verification-code-input { margin-top: 0.8rem; }
-    .page { display: none; }
-    .page.active-page { display: block; }
-    .theme-switch {
-      position: fixed;
-      bottom: 1rem;
-      right: 1rem;
-      z-index: 1000;
-      background: var(--card-bg);
-      backdrop-filter: blur(8px);
+    .auth-tabs button {
+      width: auto;
+      background: transparent;
       border: 1px solid var(--border);
-      border-radius: 60px;
-      padding: 0.5rem;
-      cursor: pointer;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      color: var(--text);
     }
-    /* Ajustements responsive */
+    .auth-tabs button.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+    /* Grille des fonctionnalités (accueil) */
+    .feature-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      justify-content: center;
+      margin: 0.8rem 0;
+    }
+    .feature-card {
+      background: rgba(255,42,109,0.1);
+      backdrop-filter: blur(4px);
+      padding: 0.3rem 0.8rem;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text);
+      border: 1px solid var(--border-pink, var(--border));
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      transform: translateY(0);
+    }
+    .feature-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border-color: var(--accent);
+      background: rgba(255,42,109,0.2);
+    }
+    .contact-buttons {
+      display: flex;
+      gap: 0.6rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 0.8rem 0;
+    }
+    .contact-btn {
+      background: rgba(255,42,109,0.1);
+      backdrop-filter: blur(4px);
+      border: 1px solid var(--border-pink, var(--border));
+      padding: 0.3rem 1rem;
+      border-radius: 60px;
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.75rem;
+      transition: 0.2s;
+    }
+    .contact-btn:hover {
+      background: var(--accent);
+      color: #0a0005;
+      transform: translateY(-2px);
+    }
+    .home-image {
+      max-width: 180px;
+      border-radius: 24px;
+      border: 2px solid var(--accent);
+      display: block;
+      margin: 0 auto;
+    }
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 1rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      margin-top: 2rem;
+    }
     @media (max-width: 600px) {
-      .glass-card { padding: 1rem; }
-      h1 { font-size: 1.4rem; }
-      .large-avatar, .medium-avatar, .small-avatar { width: 60px; height: 60px; }
+      .header { flex-direction: column; align-items: stretch; }
+      .dropdown-menu { right: 10px; left: auto; }
+      .home-image { max-width: 150px; }
     }
   </style>
 </head>
 <body>
-<div class="bg-3d" id="bg3d"></div>
-<div class="perspective-wrapper">
-  <div class="container" id="mainContainer">
-    <nav>
-      <div class="nav-link active" data-page="home">Accueil</div>
-      <div class="nav-link" data-page="pairing">Pairing</div>
-      <div class="nav-link" data-page="profile">Mon compte</div>
-    </nav>
+<div class="container">
+  <div class="header">
+    <div class="logo">MAKIMA M-DX</div>
+    <div style="display: flex; gap: 0.8rem; align-items: center;">
+      <div class="hamburger" id="hamburgerBtn">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i> Thème</div>
+    </div>
+  </div>
+  <div class="dropdown-menu" id="dropdownMenu">
+    <a data-page="home">🏠 Accueil</a>
+    <a data-page="profile">👤 Mon compte</a>
+    <a data-page="pairing">📱 Pairing WhatsApp</a>
+    <a data-page="deployment">🔌 Connexion en cours</a>
+  </div>
 
-    <!-- PAGE ACCUEIL -->
-    <div id="homePage" class="page active-page">
-      <div class="glass-card">
-        <div style="text-align: center;">
-          <h1>MAKIMA M-DX</h1>
-          <div class="sub">par <strong>THE DARKNESS</strong> — infrastructure conversationnelle</div>
-        </div>
-        <!-- Pastille clignotante au-dessus de l'image -->
-        <div class="avatar-center">
-          <div class="preview-badge">Aperçu du Projet de Valdes</div>
-          <img src="https://files.catbox.moe/erp250.jpg" alt="MAKIMA" class="home-image">
-        </div>
-        <p style="text-align: center; font-size:0.85rem; margin: 1rem 0;">
-          Solution WhatsApp nouvelle génération. Créez un compte, vérifiez votre email, connectez-vous et gérez votre appairage.
-        </p>
-        <div style="display:flex; flex-wrap:wrap; gap:0.6rem; justify-content:center; margin:1rem 0;">
-          <span class="feature" style="background:rgba(255,42,109,0.15); border-radius:60px; padding:0.3rem 0.8rem; font-size:0.75rem;">Pairing sécurisé</span>
-          <span class="feature">Vérification email</span>
-          <span class="feature">API externes</span>
-          <span class="feature">Haute disponibilité</span>
-        </div>
-        <div style="display:flex; gap:0.8rem; justify-content:center; flex-wrap:wrap;">
-          <a href="https://wa.me/237671281938" class="contact-btn" style="background:rgba(255,42,109,0.15); padding:0.4rem 1rem; border-radius:60px; text-decoration:none; font-size:0.8rem;">Support</a>
-          <a href="https://whatsapp.com/channel/0029VbBz3AYBPzjd5is5mJ2W" class="contact-btn">Chaîne</a>
-          <a href="https://github.com/ghostvaldes02-" class="contact-btn">GitHub</a>
-        </div>
+  <!-- PAGE ACCUEIL -->
+  <div id="homePage" class="page">
+    <div class="card">
+      <div class="card-title"><i class="fas fa-home"></i> Accueil</div>
+      <div style="text-align: center;">
+        <div class="preview-badge">Aperçu du Projet de Valdes</div>
+        <img src="https://files.catbox.moe/erp250.jpg" alt="MAKIMA" class="home-image">
+      </div>
+      <p style="text-align: center; font-size:0.85rem; margin: 0.8rem 0;">
+        Solution WhatsApp nouvelle génération. Créez un compte, vérifiez votre email, connectez-vous et gérez votre appairage.
+      </p>
+      <div class="feature-grid">
+        <div class="feature-card">🔒 Pairing sécurisé</div>
+        <div class="feature-card">📧 Vérification email</div>
+        <div class="feature-card">⚙️ API externes</div>
+        <div class="feature-card">🟢 Haute disponibilité</div>
+      </div>
+      <div class="contact-buttons">
+        <a href="https://wa.me/237671281938" class="contact-btn" target="_blank">Support</a>
+        <a href="https://whatsapp.com/channel/0029VbBz3AYBPzjd5is5mJ2W" class="contact-btn" target="_blank">Chaîne</a>
+        <a href="https://github.com/ghostvaldes02-" class="contact-btn" target="_blank">GitHub</a>
       </div>
     </div>
+  </div>
 
-    <!-- PAGE PAIRING (contenu dynamique) -->
-    <div id="pairingPage" class="page">
-      <div class="glass-card pairing-card">
-        <div class="avatar-center">
-          <img src="https://files.catbox.moe/ymtwvw.jpg" alt="avatar" class="small-avatar">
-        </div>
-        <h1>Lier WhatsApp</h1>
-        <div id="pairingContent"></div>
-      </div>
+  <!-- PAGE MON COMPTE -->
+  <div id="profilePage" class="page" style="display: none;">
+    <div class="card">
+      <div class="card-title"><i class="fas fa-user-circle"></i> Mon Profil</div>
+      <div id="profileContent"></div>
     </div>
+  </div>
 
-    <!-- PAGE MON COMPTE -->
-    <div id="profilePage" class="page">
-      <div class="glass-card profile-card">
-        <!-- Zone non connecté -->
-        <div id="notLoggedIn">
-          <div class="avatar-center">
-            <img src="https://files.catbox.moe/vlmmwm.jpg" alt="avatar" class="medium-avatar">
-          </div>
-          <h1>Accès sécurisé</h1>
-          <div class="auth-tabs">
-            <div class="auth-tab active-tab" data-auth-tab="login">Connexion</div>
-            <div class="auth-tab" data-auth-tab="register">Créer un compte</div>
-          </div>
-          <div id="loginForm" class="auth-form active-form">
-            <div class="input-group"><label>Email ou pseudo</label><input type="text" id="loginIdentifier" placeholder="exemple@domaine.com ou pseudo"></div>
-            <div class="input-group"><label>Mot de passe</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
-            <button id="doLoginBtn">Se connecter</button>
-            <div id="loginMessage"></div>
-          </div>
-          <div id="registerForm" class="auth-form">
-            <div class="input-group"><label>Nom d'utilisateur</label><input type="text" id="regUsername" placeholder="Votre pseudo"></div>
-            <div class="input-group"><label>Email</label><input type="email" id="regEmail" placeholder="exemple@domaine.com"></div>
-            <div class="input-group"><label>Mot de passe</label><input type="password" id="regPassword" placeholder="Minimum 6 caractères"></div>
-            <button id="doRegisterBtn">Créer mon compte</button>
-            <div id="registerMessage"></div>
-          </div>
-        </div>
-        <!-- Zone connecté -->
-        <div id="loggedIn" style="display: none;">
-          <!-- Info créateur -->
-          <div class="creator-info">
-            <div class="flex-avatar-row">
-              <img src="https://files.catbox.moe/vlmmwm.jpg" alt="créateur" class="large-avatar">
-              <div>
-                <span class="status-badge creator-badge">créateur</span>
-                <div style="font-weight:bold; margin-top:4px;">#VALDES • THE DARKNESS</div>
-              </div>
-            </div>
-            <a href="https://wa.me/237671281938" class="mini-btn" target="_blank">Contacter</a>
-          </div>
-          <!-- Infos utilisateur -->
-          <div class="user-info-card" id="userInfoDisplay"></div>
-          <!-- Numéro WhatsApp lié -->
-          <div id="whatsappNumberDisplay" style="margin-bottom:1rem; font-size:0.85rem; background:var(--bg-secondary); border-radius:60px; padding:0.5rem 1rem; text-align:center;"></div>
-          <!-- Déconnexion sécurisée -->
-          <div class="logout-section">
-            <h3>🔒 Déconnexion sécurisée</h3>
-            <div class="input-group"><label>Email ou pseudo</label><input type="text" id="logoutIdentifier" placeholder="Votre email ou pseudo"></div>
-            <div class="input-group"><label>Mot de passe</label><input type="password" id="logoutPassword" placeholder="Mot de passe"></div>
-            <button id="secureLogoutBtn">Se déconnecter</button>
-            <div id="logoutMessage"></div>
-          </div>
-        </div>
+  <!-- PAGE PAIRING -->
+  <div id="pairingPage" class="page" style="display: none;">
+    <div class="card">
+      <div class="card-title"><i class="fab fa-whatsapp"></i> Lier votre WhatsApp</div>
+      <div style="text-align: center; margin-bottom: 1rem;">
+        <img src="https://files.catbox.moe/ymtwvw.jpg" alt="whatsapp" style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--accent);">
       </div>
+      <div id="pairingContent"></div>
     </div>
+  </div>
 
-    <footer>© 2025 THE DARKNESS — MAKIMA M-DX · v2.0</footer>
+  <!-- PAGE CONNEXION EN COURS -->
+  <div id="deploymentPage" class="page" style="display: none;">
+    <div class="card">
+      <div class="card-title"><i class="fas fa-plug"></i> Connexion en cours</div>
+      <div id="deploymentContent"></div>
+    </div>
   </div>
 </div>
-<div class="theme-switch" id="themeToggle">🌙</div>
+<div class="footer">
+  © 2026 THE DARKNESS — MAKIMA M-DX | ◉ VALDES
+</div>
 
 <script>
-  (function() {
-    // === Effet d'illumination toggle (clic active/désactive) ===
-    let glowEnabled = false;
-    const cards = document.querySelectorAll('.glass-card');
-    function applyGlow() {
-      cards.forEach(card => {
+  // ==================== SYSTÈME DE COMPTES ====================
+  const STORAGE_KEY = 'makima_users';
+  const SESSION_KEY = 'makima_current_user';
+  const VERIF_KEY = 'makima_verif';
+
+  let users = [];
+  try { const stored = localStorage.getItem(STORAGE_KEY); if (stored) users = JSON.parse(stored); } catch(e) { users = []; }
+  function saveUsers() { localStorage.setItem(STORAGE_KEY, JSON.stringify(users)); }
+  function getCurrentUser() { const session = localStorage.getItem(SESSION_KEY); return session ? JSON.parse(session) : null; }
+  function setCurrentUser(user) { localStorage.setItem(SESSION_KEY, JSON.stringify(user)); }
+  function clearCurrentUser() { localStorage.removeItem(SESSION_KEY); }
+
+  function sendVerificationCode(email, code) { alert(`🔐 Code de vérification (simulation) : ${code}\nEnvoyé à ${email}`); }
+  function generateCode() { return Math.floor(100000 + Math.random() * 900000).toString(); }
+
+  // Mise à jour de l'affichage du profil (avec image)
+  function updateProfileUI() {
+    const container = document.getElementById('profileContent');
+    const user = getCurrentUser();
+    if (!user) {
+      container.innerHTML = `
+        <div class="profile-row">
+          <img src="https://files.catbox.moe/vlmmwm.jpg" class="avatar" alt="avatar">
+          <div><strong>Non connecté</strong><br>Créez un compte ou connectez-vous</div>
+        </div>
+        <div class="auth-tabs" id="authTabs">
+          <button id="showLoginBtn" class="active">Connexion</button>
+          <button id="showRegisterBtn">Inscription</button>
+        </div>
+        <div id="loginForm">
+          <div class="input-group"><label>Email ou pseudo</label><input type="text" id="loginIdentifier" placeholder="exemple@domaine.com"></div>
+          <div class="input-group"><label>Mot de passe</label><input type="password" id="loginPassword" placeholder="••••"></div>
+          <button id="doLoginBtn">Se connecter</button>
+          <div id="loginMessage"></div>
+        </div>
+        <div id="registerForm" style="display:none;">
+          <div class="input-group"><label>Pseudo</label><input type="text" id="regUsername" placeholder="Pseudo"></div>
+          <div class="input-group"><label>Email</label><input type="email" id="regEmail" placeholder="Email"></div>
+          <div class="input-group"><label>Mot de passe</label><input type="password" id="regPassword" placeholder="Min 6 caractères"></div>
+          <button id="doRegisterBtn">Créer mon compte</button>
+          <div id="registerMessage"></div>
+        </div>
+      `;
+      document.getElementById('showLoginBtn')?.addEventListener('click', () => {
+        document.getElementById('loginForm').style.display = 'block';
+        document.getElementById('registerForm').style.display = 'none';
+        document.getElementById('showLoginBtn').classList.add('active');
+        document.getElementById('showRegisterBtn').classList.remove('active');
+      });
+      document.getElementById('showRegisterBtn')?.addEventListener('click', () => {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('registerForm').style.display = 'block';
+        document.getElementById('showRegisterBtn').classList.add('active');
+        document.getElementById('showLoginBtn').classList.remove('active');
+      });
+      document.getElementById('doLoginBtn')?.addEventListener('click', () => {
+        const identifier = document.getElementById('loginIdentifier').value.trim();
+        const password = document.getElementById('loginPassword').value.trim();
+        const user = users.find(u => (u.email === identifier || u.username === identifier) && u.password === btoa(password));
+        if (!user) { document.getElementById('loginMessage').innerHTML = '<span class="error-msg">Identifiants incorrects</span>'; return; }
+        if (!user.verified) { document.getElementById('loginMessage').innerHTML = '<span class="error-msg">Compte non vérifié</span>'; return; }
+        setCurrentUser({ id: user.id, username: user.username, email: user.email, whatsappNumber: user.whatsappNumber });
+        updateProfileUI();
+        updatePairingUI();
+        updateDeploymentUI();
+      });
+      document.getElementById('doRegisterBtn')?.addEventListener('click', () => {
+        const username = document.getElementById('regUsername').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const password = document.getElementById('regPassword').value.trim();
+        if (!username || !email || password.length < 6) { document.getElementById('registerMessage').innerHTML = '<span class="error-msg">Champs invalides (mdp min 6)</span>'; return; }
+        if (users.find(u => u.email === email || u.username === username)) { document.getElementById('registerMessage').innerHTML = '<span class="error-msg">Email ou pseudo déjà utilisé</span>'; return; }
+        const code = generateCode();
+        localStorage.setItem(VERIF_KEY, JSON.stringify({ username, email, password: btoa(password), code }));
+        sendVerificationCode(email, code);
+        document.getElementById('registerMessage').innerHTML = `<div class="success-msg">Code envoyé à ${email}. Saisissez-le ci-dessous.</div><div class="input-group"><input type="text" id="verifCode" placeholder="Code 6 chiffres"><button id="verifyBtn">Vérifier</button></div>`;
+        document.getElementById('verifyBtn')?.addEventListener('click', () => {
+          const entered = document.getElementById('verifCode').value.trim();
+          const pending = JSON.parse(localStorage.getItem(VERIF_KEY));
+          if (entered === pending.code) {
+            users.push({ id: Date.now(), username: pending.username, email: pending.email, password: pending.password, verified: true, whatsappNumber: null });
+            saveUsers();
+            localStorage.removeItem(VERIF_KEY);
+            document.getElementById('registerMessage').innerHTML = '<span class="success-msg">Compte créé ! Connectez-vous.</span>';
+            document.getElementById('showLoginBtn').click();
+          } else { document.getElementById('registerMessage').innerHTML = '<span class="error-msg">Code invalide</span>'; }
+        });
+      });
+      return;
+    }
+    // Utilisateur connecté
+    container.innerHTML = `
+      <div class="profile-row">
+        <img src="https://files.catbox.moe/vlmmwm.jpg" class="avatar" alt="avatar">
+        <div><strong>${user.username}</strong><br>${user.email}<br><span class="status-badge">Connecté</span></div>
+      </div>
+      <div class="input-group"><label>Nom d'affichage</label><input type="text" value="${user.username}" disabled></div>
+      <div class="input-group"><label>Email</label><input type="text" value="${user.email}" disabled></div>
+      <div><strong>WhatsApp lié :</strong> ${user.whatsappNumber || 'Non renseigné'}</div>
+      <button id="logoutSecureBtn" style="margin-top:1rem; background:transparent; border:1px solid var(--accent); color:var(--accent);">Se déconnecter</button>
+      <div id="logoutMessage"></div>
+    `;
+    document.getElementById('logoutSecureBtn')?.addEventListener('click', () => {
+      clearCurrentUser();
+      updateProfileUI();
+      updatePairingUI();
+      updateDeploymentUI();
+    });
+  }
+
+  // Page Pairing (génération code)
+  function updatePairingUI() {
+    const container = document.getElementById('pairingContent');
+    const user = getCurrentUser();
+    if (!user) {
+      container.innerHTML = `<div class="error-msg">🔒 Connectez-vous pour lier votre WhatsApp</div><button id="goToProfileBtn" style="width:auto;">Aller à Mon compte</button>`;
+      document.getElementById('goToProfileBtn')?.addEventListener('click', () => switchPage('profile'));
+      return;
+    }
+    container.innerHTML = `
+      <div class="input-group"><label>Numéro WhatsApp (indicatif pays)</label><input type="tel" id="phoneNumber" placeholder="237671410035"></div>
+      <button id="generatePairBtn">Obtenir le code d'appairage</button>
+      <div id="pairResult"></div>
+    `;
+    document.getElementById('generatePairBtn')?.addEventListener('click', async () => {
+      const raw = document.getElementById('phoneNumber').value.trim();
+      const clean = raw.replace(/\D/g, '');
+      if (clean.length < 8) { document.getElementById('pairResult').innerHTML = '<span class="error-msg">Numéro invalide</span>'; return; }
+      document.getElementById('pairResult').innerHTML = '<div class="loader"></div> Génération...';
+      try {
+        const response = await fetch('/api/pair', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ number: clean }) });
+        const data = await response.json();
+        if (response.ok && data.success && data.code) {
+          const userIndex = users.findIndex(u => u.id === user.id);
+          if (userIndex !== -1) { users[userIndex].whatsappNumber = clean; saveUsers(); setCurrentUser(users[userIndex]); updateProfileUI(); }
+          document.getElementById('pairResult').innerHTML = `<div class="code-result"><div>✅ Code (valable 60s)</div><div class="code-number">${data.code}</div><button class="copy-btn" id="copyCodeBtn">Copier</button></div>`;
+          document.getElementById('copyCodeBtn')?.addEventListener('click', () => navigator.clipboard.writeText(data.code).then(() => alert('Copié')));
+        } else { document.getElementById('pairResult').innerHTML = `<span class="error-msg">Erreur : ${data.error || 'serveur'}</span>`; }
+      } catch(e) { document.getElementById('pairResult').innerHTML = '<span class="error-msg">Serveur indisponible</span>'; }
+    });
+  }
+
+  // Page "Connexion en cours" (simulation)
+  let whatsappConnected = false;
+  function updateDeploymentUI() {
+    const container = document.getElementById('deploymentContent');
+    const user = getCurrentUser();
+    if (!user) {
+      container.innerHTML = `<div class="error-msg">🔒 Connectez-vous pour voir l'état de votre session WhatsApp</div><button id="goToProfileDeployBtn" style="width:auto;">Aller à Mon compte</button>`;
+      document.getElementById('goToProfileDeployBtn')?.addEventListener('click', () => switchPage('profile'));
+      return;
+    }
+    const statusText = whatsappConnected ? '✅ Connecté' : '❌ Déconnecté';
+    const statusColor = whatsappConnected ? 'var(--success)' : '#ef4444';
+    container.innerHTML = `
+      <div style="text-align:center; margin-bottom:1rem;">
+        <div style="font-size:2rem;">${whatsappConnected ? '📱' : '⚠️'}</div>
+        <div style="font-weight:bold; color:${statusColor};">${statusText}</div>
+        <div style="font-size:0.8rem; margin-top:0.5rem;">${whatsappConnected ? 'Votre session WhatsApp est active.' : 'Aucune session active. Lancez la connexion.'}</div>
+      </div>
+      <button id="toggleConnectionBtn">${whatsappConnected ? 'Se déconnecter' : 'Lancer la connexion'}</button>
+      <div id="connectionMessage" style="margin-top:0.8rem; font-size:0.75rem; text-align:center;"></div>
+    `;
+    document.getElementById('toggleConnectionBtn')?.addEventListener('click', () => {
+      const msgDiv = document.getElementById('connectionMessage');
+      if (!whatsappConnected) {
+        msgDiv.innerHTML = '<div class="loader"></div> Connexion en cours...';
+        setTimeout(() => {
+          whatsappConnected = true;
+          updateDeploymentUI();
+          msgDiv.innerHTML = '<span class="success-msg">✅ Connecté avec succès !</span>';
+          setTimeout(() => { if (document.getElementById('connectionMessage')) msgDiv.innerHTML = ''; }, 2000);
+        }, 1500);
+      } else {
+        whatsappConnected = false;
+        updateDeploymentUI();
+        msgDiv.innerHTML = '<span class="success-msg">🔌 Déconnecté.</span>';
+        setTimeout(() => { if (document.getElementById('connectionMessage')) msgDiv.innerHTML = ''; }, 1500);
+      }
+    });
+  }
+
+  // Navigation entre pages
+  function switchPage(pageId) {
+    const pages = ['home', 'profile', 'pairing', 'deployment'];
+    pages.forEach(p => {
+      const el = document.getElementById(p + 'Page');
+      if (el) el.style.display = 'none';
+    });
+    document.getElementById(pageId + 'Page').style.display = 'block';
+    if (pageId === 'profile') updateProfileUI();
+    if (pageId === 'pairing') updatePairingUI();
+    if (pageId === 'deployment') updateDeploymentUI();
+    closeMenu();
+  }
+
+  // Gestion du menu hamburger (sans overlay)
+  const hamburger = document.getElementById('hamburgerBtn');
+  const dropdown = document.getElementById('dropdownMenu');
+
+  function openMenu() {
+    dropdown.classList.add('show');
+  }
+  function closeMenu() {
+    dropdown.classList.remove('show');
+  }
+
+  hamburger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (dropdown.classList.contains('show')) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  });
+  // Fermeture en cliquant n'importe où ailleurs (sauf sur le menu)
+  document.addEventListener('click', (e) => {
+    if (!hamburger.contains(e.target) && !dropdown.contains(e.target)) {
+      closeMenu();
+    }
+  });
+  document.querySelectorAll('.dropdown-menu a').forEach(link => {
+    link.addEventListener('click', (e) => {
+      const page = link.getAttribute('data-page');
+      if (page) switchPage(page);
+      closeMenu();
+    });
+  });
+
+  // Thème clair/sombre
+  const themeToggle = document.getElementById('themeToggle');
+  if (localStorage.getItem('theme') === 'light') document.body.classList.add('light');
+  themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('light');
+    localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+  });
+
+  // Effet d'illumination toggle (clic sur fond)
+  let glowEnabled = false;
+  document.body.addEventListener('click', (e) => {
+    if (!e.target.closest('.hamburger') && !e.target.closest('.dropdown-menu') && !e.target.closest('button') && !e.target.closest('input')) {
+      glowEnabled = !glowEnabled;
+      document.querySelectorAll('.card').forEach(card => {
         if (glowEnabled) card.classList.add('glow-active');
         else card.classList.remove('glow-active');
       });
     }
-    document.addEventListener('click', function(e) {
-      glowEnabled = !glowEnabled;
-      applyGlow();
-    });
+  });
 
-    // Thème
-    const themeToggle = document.getElementById('themeToggle');
-    const body = document.body;
-    if (localStorage.getItem('makima-theme') === 'dark') body.classList.add('dark');
-    themeToggle.addEventListener('click', () => {
-      body.classList.toggle('dark');
-      localStorage.setItem('makima-theme', body.classList.contains('dark') ? 'dark' : 'light');
-    });
-
-    // Effet 3D
-    const bg = document.getElementById('bg3d');
-    const container = document.getElementById('mainContainer');
-    if (bg && container) {
-      document.addEventListener('mousemove', (e) => {
-        const x = (e.clientX / window.innerWidth) * 30 - 15;
-        const y = (e.clientY / window.innerHeight) * 20 - 10;
-        bg.style.transform = `translateZ(-80px) translateX(${x*0.3}px) translateY(${y*0.2}px) scale(1.2)`;
-        container.style.transform = `translateZ(30px) rotateX(${y*0.015}deg) rotateY(${x*0.015}deg)`;
-      });
-    }
-
-    // Navigation
-    const pages = { home: document.getElementById('homePage'), pairing: document.getElementById('pairingPage'), profile: document.getElementById('profilePage') };
-    const navLinks = document.querySelectorAll('.nav-link');
-    function switchPage(pageId) {
-      Object.keys(pages).forEach(id => pages[id].classList.remove('active-page'));
-      pages[pageId].classList.add('active-page');
-      navLinks.forEach(link => { if (link.getAttribute('data-page') === pageId) link.classList.add('active'); else link.classList.remove('active'); });
-    }
-    navLinks.forEach(link => { link.addEventListener('click', () => { const pageId = link.getAttribute('data-page'); if (pageId && pages[pageId]) switchPage(pageId); }); });
-
-    // Gestion des comptes (localStorage simulée)
-    const STORAGE_KEY = 'makima_users';
-    const SESSION_KEY = 'makima_current_user';
-    const VERIF_KEY = 'makima_verif';
-    let users = [];
-    try { const stored = localStorage.getItem(STORAGE_KEY); if (stored) users = JSON.parse(stored); } catch(e) { users = []; }
-    function saveUsers() { localStorage.setItem(STORAGE_KEY, JSON.stringify(users)); }
-    function getCurrentUser() { const session = localStorage.getItem(SESSION_KEY); return session ? JSON.parse(session) : null; }
-    function setCurrentUser(user) { localStorage.setItem(SESSION_KEY, JSON.stringify(user)); }
-    function clearCurrentUser() { localStorage.removeItem(SESSION_KEY); }
-    function sendVerificationCode(email, code) { console.log(`📧 Code ${code} envoyé à ${email}`); alert(`🔐 Code de vérification (simulation) : ${code}\n(Veuillez le saisir)`); }
-    function generateCode() { return Math.floor(100000 + Math.random() * 900000).toString(); }
-
-    // Inscription
-    const registerBtn = document.getElementById('doRegisterBtn');
-    const regUsername = document.getElementById('regUsername');
-    const regEmail = document.getElementById('regEmail');
-    const regPassword = document.getElementById('regPassword');
-    const registerMessage = document.getElementById('registerMessage');
-    registerBtn.addEventListener('click', () => {
-      const username = regUsername.value.trim(), email = regEmail.value.trim(), password = regPassword.value.trim();
-      if (!username || !email || !password) { registerMessage.innerHTML = '<span class="error-msg">Tous les champs sont requis.</span>'; return; }
-      if (password.length < 6) { registerMessage.innerHTML = '<span class="error-msg">6 caractères minimum.</span>'; return; }
-      if (users.find(u => u.email === email || u.username === username)) { registerMessage.innerHTML = '<span class="error-msg">Email ou pseudo déjà utilisé.</span>'; return; }
-      const verifCode = generateCode();
-      localStorage.setItem(VERIF_KEY, JSON.stringify({ username, email, password: btoa(password), code: verifCode }));
-      sendVerificationCode(email, verifCode);
-      registerMessage.innerHTML = `<div class="success-msg">✅ Un code a été envoyé à ${email}.</div><div class="input-group verification-code-input"><label>Code reçu</label><input type="text" id="verifCodeInput" placeholder="6 chiffres"><button id="verifyCodeBtn" style="margin-top:0.5rem;">Vérifier et activer</button></div>`;
-      const verifyBtn = document.getElementById('verifyCodeBtn');
-      const verifInput = document.getElementById('verifCodeInput');
-      if (verifyBtn) verifyBtn.addEventListener('click', () => {
-        const entered = verifInput.value.trim();
-        const pending = localStorage.getItem(VERIF_KEY);
-        if (!pending) { registerMessage.innerHTML = '<span class="error-msg">Aucune inscription en attente.</span>'; return; }
-        const data = JSON.parse(pending);
-        if (entered === data.code) {
-          users.push({ id: Date.now(), username: data.username, email: data.email, password: data.password, verified: true, whatsappNumber: null });
-          saveUsers();
-          localStorage.removeItem(VERIF_KEY);
-          registerMessage.innerHTML = '<span class="success-msg">✅ Compte activé ! Connectez-vous.</span>';
-          regUsername.value = ''; regEmail.value = ''; regPassword.value = '';
-          document.querySelector('[data-auth-tab="login"]').click();
-        } else { registerMessage.innerHTML = '<span class="error-msg">❌ Code incorrect.</span>'; }
-      });
-    });
-
-    // Connexion (email ou pseudo)
-    const loginBtn = document.getElementById('doLoginBtn');
-    const loginIdentifier = document.getElementById('loginIdentifier');
-    const loginPassword = document.getElementById('loginPassword');
-    const loginMessage = document.getElementById('loginMessage');
-    loginBtn.addEventListener('click', () => {
-      const identifier = loginIdentifier.value.trim();
-      const password = loginPassword.value.trim();
-      if (!identifier || !password) { loginMessage.innerHTML = '<span class="error-msg">Identifiant et mot de passe requis.</span>'; return; }
-      const user = users.find(u => (u.email === identifier || u.username === identifier) && u.password === btoa(password));
-      if (!user) { loginMessage.innerHTML = '<span class="error-msg">Identifiants incorrects.</span>'; return; }
-      if (!user.verified) { loginMessage.innerHTML = '<span class="error-msg">Compte non vérifié.</span>'; return; }
-      setCurrentUser({ id: user.id, username: user.username, email: user.email, whatsappNumber: user.whatsappNumber || null });
-      loginMessage.innerHTML = '';
-      loginIdentifier.value = ''; loginPassword.value = '';
-      updateProfileUI();
-      updatePairingUI();
-    });
-
-    // Déconnexion sécurisée
-    const secureLogoutBtn = document.getElementById('secureLogoutBtn');
-    const logoutIdentifier = document.getElementById('logoutIdentifier');
-    const logoutPassword = document.getElementById('logoutPassword');
-    const logoutMessage = document.getElementById('logoutMessage');
-    secureLogoutBtn.addEventListener('click', () => {
-      const current = getCurrentUser();
-      if (!current) { logoutMessage.innerHTML = '<span class="error-msg">Aucun utilisateur connecté.</span>'; return; }
-      const identifier = logoutIdentifier.value.trim();
-      const password = logoutPassword.value.trim();
-      if (!identifier || !password) { logoutMessage.innerHTML = '<span class="error-msg">Veuillez saisir votre identifiant (email/pseudo) et mot de passe.</span>'; return; }
-      const user = users.find(u => (u.email === identifier || u.username === identifier) && u.id === current.id);
-      if (!user || user.password !== btoa(password)) {
-        logoutMessage.innerHTML = '<span class="error-msg">❌ Identifiants incorrects. Déconnexion impossible.</span>';
-        return;
-      }
-      clearCurrentUser();
-      logoutMessage.innerHTML = '<span class="success-msg">✅ Déconnecté avec succès.</span>';
-      logoutIdentifier.value = '';
-      logoutPassword.value = '';
-      updateProfileUI();
-      updatePairingUI();
-      setTimeout(() => { logoutMessage.innerHTML = ''; }, 2000);
-    });
-
-    function updateProfileUI() {
-      const current = getCurrentUser();
-      const notLoggedDiv = document.getElementById('notLoggedIn');
-      const loggedDiv = document.getElementById('loggedIn');
-      const userInfoDisplay = document.getElementById('userInfoDisplay');
-      const whatsappNumberDisplay = document.getElementById('whatsappNumberDisplay');
-      if (current) {
-        notLoggedDiv.style.display = 'none';
-        loggedDiv.style.display = 'block';
-        userInfoDisplay.innerHTML = `<div>👤 <strong>${current.username}</strong> (${current.email})</div><div class="status-badge">Connecté</div>`;
-        const whatsapp = current.whatsappNumber ? current.whatsappNumber : 'Non renseigné';
-        whatsappNumberDisplay.innerHTML = `📱 WhatsApp lié : <strong>${whatsapp}</strong>`;
-      } else {
-        notLoggedDiv.style.display = 'block';
-        loggedDiv.style.display = 'none';
-      }
-    }
-
-    function saveWhatsappNumber(number) {
-      const current = getCurrentUser();
-      if (current) {
-        const userIndex = users.findIndex(u => u.id === current.id);
-        if (userIndex !== -1) {
-          users[userIndex].whatsappNumber = number;
-          saveUsers();
-          current.whatsappNumber = number;
-          setCurrentUser(current);
-          updateProfileUI();
-        }
-      }
-    }
-
-    function updatePairingUI() {
-      const pairingContainer = document.getElementById('pairingContent');
-      const currentUser = getCurrentUser();
-      if (!currentUser) {
-        pairingContainer.innerHTML = `
-          <div class="error-msg" style="text-align:center; margin:1rem 0;">
-            🔒 Vous devez avoir un compte et être connecté pour lier votre WhatsApp.
-          </div>
-          <div style="text-align:center; margin-top:1rem;">
-            <button id="goToAccountBtn" style="width:auto; padding:0.5rem 1rem;">Créer un compte / Se connecter</button>
-          </div>
-        `;
-        const goBtn = document.getElementById('goToAccountBtn');
-        if (goBtn) goBtn.addEventListener('click', () => switchPage('profile'));
-        return;
-      }
-      pairingContainer.innerHTML = `
-        <p class="sub">Entrez votre numéro avec indicatif (ex: 237671410035)</p>
-        <div class="input-group">
-          <label>Numéro WhatsApp</label>
-          <input type="tel" id="phoneNumber" placeholder="237671410035" maxlength="15">
-        </div>
-        <button id="generateBtn">Obtenir le code d'appairage</button>
-        <div id="resultArea"></div>
-      `;
-      const generateBtn = document.getElementById('generateBtn');
-      const phoneInput = document.getElementById('phoneNumber');
-      const resultArea = document.getElementById('resultArea');
-      if (generateBtn) {
-        generateBtn.addEventListener('click', async () => {
-          const raw = phoneInput.value.trim();
-          const clean = raw.replace(/\D/g, '');
-          if (clean.length < 8) { resultArea.innerHTML = `<div class="error-msg">❌ Numéro invalide (ex: 237671410035)</div>`; return; }
-          resultArea.innerHTML = `<div class="code-result"><div class="loader"></div> Génération...</div>`;
-          try {
-            const response = await fetch('/api/pair', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ number: clean }) });
-            const data = await response.json();
-            if (response.ok && data.success && data.code) {
-              saveWhatsappNumber(clean);
-              resultArea.innerHTML = `<div class="code-result"><div>✅ Code (valable 60s)</div><div class="code-number">${data.code}</div><button class="copy-btn" id="copyCodeBtn">Copier</button><div style="font-size:0.7rem;">WhatsApp → Appareils liés → Lier avec un code</div></div>`;
-              document.getElementById('copyCodeBtn')?.addEventListener('click', () => navigator.clipboard.writeText(data.code).then(() => alert('✅ Code copié')));
-            } else { resultArea.innerHTML = `<div class="error-msg">❌ ${data.error || 'Erreur serveur'}</div>`; }
-          } catch(err) { resultArea.innerHTML = `<div class="error-msg">❌ Impossible de joindre le serveur.</div>`; }
-        });
-      }
-    }
-
-    // Onglets Connexion/Inscription
-    const authTabs = document.querySelectorAll('.auth-tab');
-    const loginFormDiv = document.getElementById('loginForm');
-    const registerFormDiv = document.getElementById('registerForm');
-    authTabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const target = tab.getAttribute('data-auth-tab');
-        authTabs.forEach(t => t.classList.remove('active-tab'));
-        tab.classList.add('active-tab');
-        if (target === 'login') { loginFormDiv.classList.add('active-form'); registerFormDiv.classList.remove('active-form'); }
-        else { loginFormDiv.classList.remove('active-form'); registerFormDiv.classList.add('active-form'); }
-      });
-    });
-
-    updateProfileUI();
-    updatePairingUI();
-  })();
+  // Initialisation (page d'accueil par défaut)
+  switchPage('home');
 </script>
 </body>
-</html>
+ </html>
