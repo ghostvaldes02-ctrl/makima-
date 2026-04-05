@@ -1,17 +1,14 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>MAKIMA M-DX · Gestion WhatsApp</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <meta name="description" content="Plateforme de gestion WhatsApp - Comptes, pairing, connexion sécurisée.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    /* ========== VARIABLES ========== */
     :root {
       --bg: #0a0c10;
       --surface: #15181e;
@@ -19,11 +16,14 @@
       --text: #eef2ff;
       --text-muted: #8a8f9e;
       --accent: #ff2a6d;
+      --accent-light: #ff88b0;   /* AJOUTÉ : variable manquante */
       --accent-glow: rgba(255, 42, 109, 0.3);
       --border: #2a2e3a;
       --card-bg: rgba(21, 24, 30, 0.8);
       --shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
       --success: #10b981;
+      --radius: 0.75rem;
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
     body.light {
       --bg: #f3f4f6;
@@ -34,6 +34,11 @@
       --border: #e5e7eb;
       --card-bg: rgba(255, 255, 255, 0.9);
       --shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
     body {
       background: var(--bg);
@@ -52,7 +57,15 @@
       z-index: 2;
       flex: 1;
     }
-    /* En-tête avec menu hamburger */
+    .perspective-wrapper {
+      perspective: 1200px;
+      transform-style: preserve-3d;
+    }
+    .container {
+      transform: translateZ(20px);
+      transition: transform 0.2s;
+    }
+    /* Header */
     .header {
       display: flex;
       justify-content: space-between;
@@ -64,12 +77,13 @@
     .logo {
       font-size: 1.5rem;
       font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
       background: linear-gradient(135deg, var(--accent), #ff88b0);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
     }
-    /* Menu hamburger */
+    /* Hamburger */
     .hamburger {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -81,8 +95,11 @@
       gap: 4px;
       width: 40px;
       align-items: center;
-      position: relative;
-      z-index: 1002;
+      transition: var(--transition);
+    }
+    .hamburger:hover {
+      background: var(--surface-hover);
+      border-color: var(--accent);
     }
     .hamburger span {
       width: 22px;
@@ -91,7 +108,6 @@
       border-radius: 2px;
       transition: 0.2s;
     }
-    /* Dropdown menu - sans flou */
     .dropdown-menu {
       position: fixed;
       top: 70px;
@@ -99,12 +115,16 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 16px;
-      min-width: 180px;
-      z-index: 1001;
-      box-shadow: var(--shadow);
+      min-width: 200px;
+      z-index: 1000;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.4);
       overflow: hidden;
       display: none;
-      pointer-events: auto;
+      backdrop-filter: blur(10px);
+      background: rgba(21, 24, 30, 0.95);
+    }
+    body.light .dropdown-menu {
+      background: rgba(255, 255, 255, 0.95);
     }
     .dropdown-menu a {
       display: block;
@@ -113,6 +133,7 @@
       text-decoration: none;
       transition: 0.1s;
       cursor: pointer;
+      font-size: 0.9rem;
     }
     .dropdown-menu a:hover {
       background: var(--surface-hover);
@@ -128,11 +149,16 @@
       padding: 0.4rem 0.8rem;
       cursor: pointer;
       font-size: 0.8rem;
+      transition: var(--transition);
     }
-    /* Cartes */
+    .theme-toggle:hover {
+      background: var(--surface-hover);
+      border-color: var(--accent);
+    }
+    /* Cards */
     .card {
       background: var(--card-bg);
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(12px);
       border: 1px solid var(--border);
       border-radius: 28px;
       padding: 1.2rem;
@@ -152,8 +178,10 @@
       align-items: center;
       gap: 0.5rem;
     }
+    /* Formulaires */
     .input-group {
       margin-bottom: 1rem;
+      position: relative;
     }
     label {
       display: block;
@@ -170,9 +198,11 @@
       color: var(--text);
       font-size: 0.85rem;
       outline: none;
+      transition: var(--transition);
     }
     input:focus {
       border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(255, 42, 109, 0.2);
     }
     button {
       background: var(--accent);
@@ -180,11 +210,35 @@
       border: none;
       cursor: pointer;
       font-weight: 600;
-      transition: 0.2s;
     }
     button:hover {
       opacity: 0.9;
       transform: translateY(-2px);
+    }
+    /* Texte flottant d'aide */
+    .floating-help {
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      margin-bottom: 0.3rem;
+      background: var(--accent);
+      color: white;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 40px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .input-group:focus-within .floating-help {
+      opacity: 1;
+    }
+    /* Quand l'utilisateur a saisi quelque chose, on cache le message */
+    .input-group.has-value .floating-help {
+      opacity: 0 !important;
     }
     .code-result {
       margin-top: 1rem;
@@ -206,6 +260,7 @@
     }
     .error-msg { color: #ef4444; }
     .success-msg { color: var(--success); }
+    /* Badges clignotants */
     .status-badge {
       display: inline-block;
       background: var(--success);
@@ -227,13 +282,28 @@
       margin-bottom: 0.6rem;
       color: white;
     }
+    .glowing-badge {
+      display: inline-block;
+      background: var(--accent);
+      padding: 0.2rem 0.6rem;
+      border-radius: 60px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      margin-left: 0.8rem;
+      animation: blinkAccent 1.2s infinite;
+      color: white;
+    }
+    @keyframes blinkAccent {
+      0%, 100% { opacity: 1; background-color: var(--accent); }
+      50% { opacity: 0.6; background-color: #ff88b0; }
+    }
     @keyframes blink {
       0%, 100% { opacity: 1; background-color: #2ecc71; }
       50% { opacity: 0.6; background-color: #27ae60; }
     }
     @keyframes blinkPreview {
       0%, 100% { opacity: 1; background-color: var(--accent); }
-      50% { opacity: 0.6; background-color: var(--accent-light, #ff88b0); }
+      50% { opacity: 0.6; background-color: #ff88b0; }
     }
     .loader {
       display: inline-block;
@@ -247,9 +317,9 @@
       vertical-align: middle;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    /* Effet illumination toggle */
+    /* Effet d'illumination */
     .glow-active {
-      box-shadow: 0 0 0 2px var(--accent), 0 0 15px var(--accent-glow);
+      box-shadow: 0 0 0 2px var(--accent), 0 0 20px var(--accent-glow);
       transition: 0.1s;
     }
     .profile-row {
@@ -282,7 +352,6 @@
       color: white;
       border-color: var(--accent);
     }
-    /* Grille des fonctionnalités (accueil) */
     .feature-grid {
       display: flex;
       flex-wrap: wrap;
@@ -298,7 +367,7 @@
       font-size: 0.75rem;
       font-weight: 500;
       color: var(--text);
-      border: 1px solid var(--border-pink, var(--border));
+      border: 1px solid var(--border);
       transition: all 0.2s ease;
       box-shadow: 0 2px 5px rgba(0,0,0,0.05);
       transform: translateY(0);
@@ -319,14 +388,14 @@
     .contact-btn {
       background: rgba(255,42,109,0.1);
       backdrop-filter: blur(4px);
-      border: 1px solid var(--border-pink, var(--border));
+      border: 1px solid var(--border);
       padding: 0.3rem 1rem;
       border-radius: 60px;
       color: var(--text);
       text-decoration: none;
       font-weight: 500;
       font-size: 0.75rem;
-      transition: 0.2s;
+      transition: var(--transition);
     }
     .contact-btn:hover {
       background: var(--accent);
@@ -339,8 +408,11 @@
       border: 2px solid var(--accent);
       display: block;
       margin: 0 auto;
+      transition: transform 0.3s;
     }
-    /* Footer */
+    .home-image:hover {
+      transform: scale(1.02);
+    }
     .footer {
       text-align: center;
       padding: 1rem;
@@ -349,14 +421,53 @@
       font-size: 0.7rem;
       margin-top: 2rem;
     }
+    .credits-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    .credit-card {
+      background: var(--surface);
+      border-radius: 24px;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      transition: var(--transition);
+    }
+    .credit-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .credit-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .credit-img {
+      width: 100%;
+      max-width: 300px;
+      border-radius: 20px;
+      margin: 0.8rem 0;
+      border: 1px solid var(--border);
+    }
+    .credit-text {
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: var(--text-muted);
+    }
     @media (max-width: 600px) {
-      .header { flex-direction: column; align-items: stretch; }
-      .dropdown-menu { right: 10px; left: auto; }
-      .home-image { max-width: 150px; }
+      .container { max-width: 95%; }
+      .credit-img { max-width: 100%; }
+      .floating-help { white-space: normal; width: 200px; font-size: 0.65rem; }
     }
   </style>
 </head>
 <body>
+<div class="perspective-wrapper">
 <div class="container">
   <div class="header">
     <div class="logo">MAKIMA M-DX</div>
@@ -368,10 +479,11 @@
     </div>
   </div>
   <div class="dropdown-menu" id="dropdownMenu">
-    <a data-page="home">🏠 Accueil</a>
-    <a data-page="profile">👤 Mon compte</a>
-    <a data-page="pairing">📱 Pairing WhatsApp</a>
-    <a data-page="deployment">🔌 Connexion en cours</a>
+    <a data-page="home">▻ Accueil</a>
+    <a data-page="profile">▻ Mon compte</a>
+    <a data-page="pairing">▻ Pairing WhatsApp</a>
+    <a data-page="deployment">▻ Connexion en cours</a>
+    <a data-page="credits">▻ Crédits</a>
   </div>
 
   <!-- PAGE ACCUEIL -->
@@ -379,17 +491,17 @@
     <div class="card">
       <div class="card-title"><i class="fas fa-home"></i> Accueil</div>
       <div style="text-align: center;">
-        <div class="preview-badge">Aperçu du Projet de Valdes</div>
+        <div class="preview-badge">Aperçu d'un des Projets de The Darkness</div>
         <img src="https://files.catbox.moe/erp250.jpg" alt="MAKIMA" class="home-image">
       </div>
       <p style="text-align: center; font-size:0.85rem; margin: 0.8rem 0;">
         Solution WhatsApp nouvelle génération. Créez un compte, vérifiez votre email, connectez-vous et gérez votre appairage.
       </p>
       <div class="feature-grid">
-        <div class="feature-card">🔒 Pairing sécurisé</div>
-        <div class="feature-card">📧 Vérification email</div>
-        <div class="feature-card">⚙️ API externes</div>
-        <div class="feature-card">🟢 Haute disponibilité</div>
+        <div class="feature-card">Pairing sécurisé</div>
+        <div class="feature-card">Vérification email</div>
+        <div class="feature-card">API externes</div>
+        <div class="feature-card">Haute disponibilité</div>
       </div>
       <div class="contact-buttons">
         <a href="https://wa.me/237671281938" class="contact-btn" target="_blank">Support</a>
@@ -425,13 +537,52 @@
       <div id="deploymentContent"></div>
     </div>
   </div>
+
+  <!-- PAGE CRÉDITS -->
+  <div id="creditsPage" class="page" style="display: none;">
+    <div class="card">
+      <div class="card-title"><i class="fas fa-star"></i> Crédits</div>
+      <div class="credits-container">
+        <div class="credit-card">
+          <div class="credit-title">
+            VALDES / THE DARKNESS
+            <span class="glowing-badge">Créateur</span>   <!-- Texte ajouté -->
+          </div>
+          <div class="profile-row" style="margin-top:0.5rem;">
+            <img src="https://files.catbox.moe/vlmmwm.jpg" class="avatar" alt="avatar" style="width:60px; height:60px;">
+            <div class="credit-text" style="flex:1;">
+              Développeur camerounais, créateur de solutions WhatsApp alliant esthétique sombre, culture anime et rigueur technique.
+            </div>
+          </div>
+        </div>
+        <div class="credit-card">
+          <div class="credit-title">🟢 Makima M-DX</div>
+          <img src="https://files.catbox.moe/erp250.jpg" alt="Makima M-DX" class="credit-img">
+          <div class="credit-text">
+            Bot inspiré du personnage de Makima. Identité visuelle unique, ton incisif, commandes réactives et design soigné.
+          </div>
+        </div>
+        <div class="credit-card">
+          <div class="credit-title">🟢 Darkness X-MD</div>
+          <img src="https://files.catbox.moe/5p71ef.jpg" alt="Darkness X-MD" class="credit-img">
+          <div class="credit-text">
+            Assistant WhatsApp polyvalent et modulaire : modération, téléchargement, IA, commandes interactives. Alliance de puissance technique et ambiance mystérieuse.
+          </div>
+        </div>
+        <div class="credit-text" style="text-align:center; font-size:0.75rem; margin-top:0.5rem;">
+          © 2026 THE DARKNESS — Tous droits réservés
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="footer">
   © 2026 THE DARKNESS — MAKIMA M-DX | ◉ VALDES
 </div>
+</div>
 
 <script>
-  // ==================== SYSTÈME DE COMPTES ====================
+  // ==================== SYSTÈME DE COMPTES (localStorage) ====================
   const STORAGE_KEY = 'makima_users';
   const SESSION_KEY = 'makima_current_user';
   const VERIF_KEY = 'makima_verif';
@@ -443,10 +594,36 @@
   function setCurrentUser(user) { localStorage.setItem(SESSION_KEY, JSON.stringify(user)); }
   function clearCurrentUser() { localStorage.removeItem(SESSION_KEY); }
 
-  function sendVerificationCode(email, code) { alert(`🔐 Code de vérification (simulation) : ${code}\nEnvoyé à ${email}`); }
+  function sendVerificationCode(email, code) { alert(`Code de vérification (simulation) : ${code}\nEnvoyé à ${email}`); }
   function generateCode() { return Math.floor(100000 + Math.random() * 900000).toString(); }
 
-  // Mise à jour de l'affichage du profil (avec image)
+  // Helper pour ajouter les messages flottants et la détection de saisie
+  function setupFloatingHelp(inputElement, helpText) {
+    if (!inputElement) return;
+    const wrapper = inputElement.closest('.input-group');
+    if (!wrapper) return;
+    const helpSpan = document.createElement('span');
+    helpSpan.className = 'floating-help';
+    helpSpan.textContent = helpText;
+    wrapper.appendChild(helpSpan);
+    // Détecter la saisie pour masquer le message
+    inputElement.addEventListener('input', function() {
+      if (this.value.length > 0) {
+        wrapper.classList.add('has-value');
+      } else {
+        wrapper.classList.remove('has-value');
+      }
+    });
+    // Au focus, si pas de valeur, le message apparaît (via CSS)
+    // On gère aussi le blur pour remettre l'état si vide
+    inputElement.addEventListener('blur', function() {
+      if (this.value.length === 0) {
+        wrapper.classList.remove('has-value');
+      }
+    });
+  }
+
+  // Mise à jour de l'affichage du profil (avec les messages flottants)
   function updateProfileUI() {
     const container = document.getElementById('profileContent');
     const user = getCurrentUser();
@@ -462,7 +639,7 @@
         </div>
         <div id="loginForm">
           <div class="input-group"><label>Email ou pseudo</label><input type="text" id="loginIdentifier" placeholder="exemple@domaine.com"></div>
-          <div class="input-group"><label>Mot de passe</label><input type="password" id="loginPassword" placeholder="••••"></div>
+          <div class="input-group"><label>Mot de passe</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
           <button id="doLoginBtn">Se connecter</button>
           <div id="loginMessage"></div>
         </div>
@@ -474,6 +651,15 @@
           <div id="registerMessage"></div>
         </div>
       `;
+      // Ajouter les messages flottants pour les champs d'inscription
+      const regUser = document.getElementById('regUsername');
+      const regMail = document.getElementById('regEmail');
+      const regPass = document.getElementById('regPassword');
+      setupFloatingHelp(regUser, "Choisissez un pseudo unique (ex: Valdes)");
+      setupFloatingHelp(regMail, "Entrez votre email valide (ex: valdes@exemple.com)");
+      setupFloatingHelp(regPass, "Minimum 6 caractères, lettres/chiffres acceptés");
+
+      // Gestion des onglets
       document.getElementById('showLoginBtn')?.addEventListener('click', () => {
         document.getElementById('loginForm').style.display = 'block';
         document.getElementById('registerForm').style.display = 'none';
@@ -541,20 +727,27 @@
     });
   }
 
-  // Page Pairing (génération code)
+  // Page Pairing (génération code) avec message flottant
   function updatePairingUI() {
     const container = document.getElementById('pairingContent');
     const user = getCurrentUser();
     if (!user) {
-      container.innerHTML = `<div class="error-msg">🔒 Connectez-vous pour lier votre WhatsApp</div><button id="goToProfileBtn" style="width:auto;">Aller à Mon compte</button>`;
+      container.innerHTML = `<div class="error-msg">Connectez-vous pour lier votre WhatsApp</div><button id="goToProfileBtn" style="width:auto;">Aller à Mon compte</button>`;
       document.getElementById('goToProfileBtn')?.addEventListener('click', () => switchPage('profile'));
       return;
     }
     container.innerHTML = `
-      <div class="input-group"><label>Numéro WhatsApp (indicatif pays)</label><input type="tel" id="phoneNumber" placeholder="237671410035"></div>
+      <div class="input-group" id="pairingInputGroup">
+        <label>Numéro WhatsApp (indicatif pays)</label>
+        <input type="tel" id="phoneNumber" placeholder="237671410035" maxlength="15">
+      </div>
       <button id="generatePairBtn">Obtenir le code d'appairage</button>
       <div id="pairResult"></div>
     `;
+    // Ajouter le message flottant pour le numéro de téléphone
+    const phoneInput = document.getElementById('phoneNumber');
+    setupFloatingHelp(phoneInput, "Exemple: 237671410035 (indicatif pays sans le +)");
+    // Événement du bouton
     document.getElementById('generatePairBtn')?.addEventListener('click', async () => {
       const raw = document.getElementById('phoneNumber').value.trim();
       const clean = raw.replace(/\D/g, '');
@@ -566,7 +759,7 @@
         if (response.ok && data.success && data.code) {
           const userIndex = users.findIndex(u => u.id === user.id);
           if (userIndex !== -1) { users[userIndex].whatsappNumber = clean; saveUsers(); setCurrentUser(users[userIndex]); updateProfileUI(); }
-          document.getElementById('pairResult').innerHTML = `<div class="code-result"><div>✅ Code (valable 60s)</div><div class="code-number">${data.code}</div><button class="copy-btn" id="copyCodeBtn">Copier</button></div>`;
+          document.getElementById('pairResult').innerHTML = `<div class="code-result"><div>Code (valable 60s)</div><div class="code-number">${data.code}</div><button class="copy-btn" id="copyCodeBtn">Copier</button></div>`;
           document.getElementById('copyCodeBtn')?.addEventListener('click', () => navigator.clipboard.writeText(data.code).then(() => alert('Copié')));
         } else { document.getElementById('pairResult').innerHTML = `<span class="error-msg">Erreur : ${data.error || 'serveur'}</span>`; }
       } catch(e) { document.getElementById('pairResult').innerHTML = '<span class="error-msg">Serveur indisponible</span>'; }
@@ -579,11 +772,11 @@
     const container = document.getElementById('deploymentContent');
     const user = getCurrentUser();
     if (!user) {
-      container.innerHTML = `<div class="error-msg">🔒 Connectez-vous pour voir l'état de votre session WhatsApp</div><button id="goToProfileDeployBtn" style="width:auto;">Aller à Mon compte</button>`;
+      container.innerHTML = `<div class="error-msg">Connectez-vous pour voir l'état de votre session WhatsApp</div><button id="goToProfileDeployBtn" style="width:auto;">Aller à Mon compte</button>`;
       document.getElementById('goToProfileDeployBtn')?.addEventListener('click', () => switchPage('profile'));
       return;
     }
-    const statusText = whatsappConnected ? '✅ Connecté' : '❌ Déconnecté';
+    const statusText = whatsappConnected ? 'Connecté' : 'Déconnecté';
     const statusColor = whatsappConnected ? 'var(--success)' : '#ef4444';
     container.innerHTML = `
       <div style="text-align:center; margin-bottom:1rem;">
@@ -601,21 +794,21 @@
         setTimeout(() => {
           whatsappConnected = true;
           updateDeploymentUI();
-          msgDiv.innerHTML = '<span class="success-msg">✅ Connecté avec succès !</span>';
+          msgDiv.innerHTML = '<span class="success-msg">Connecté avec succès !</span>';
           setTimeout(() => { if (document.getElementById('connectionMessage')) msgDiv.innerHTML = ''; }, 2000);
         }, 1500);
       } else {
         whatsappConnected = false;
         updateDeploymentUI();
-        msgDiv.innerHTML = '<span class="success-msg">🔌 Déconnecté.</span>';
-        setTimeout(() => { if (document.getElementById('connectionMessage')) msgDiv.innerHTML = ''; }, 1500);
+        msgDiv.innerHTML = '<span class="success-msg">Déconnecté.</span>';   // Émoji supprimé
+        setTimeout(() => { if (document.getElementById('connectionMessage')) msgDiv.innerHTML = ''; }, 2000);
       }
     });
   }
 
   // Navigation entre pages
   function switchPage(pageId) {
-    const pages = ['home', 'profile', 'pairing', 'deployment'];
+    const pages = ['home', 'profile', 'pairing', 'deployment', 'credits'];
     pages.forEach(p => {
       const el = document.getElementById(p + 'Page');
       if (el) el.style.display = 'none';
@@ -627,30 +820,18 @@
     closeMenu();
   }
 
-  // Gestion du menu hamburger (sans overlay)
+  // Menu hamburger
   const hamburger = document.getElementById('hamburgerBtn');
   const dropdown = document.getElementById('dropdownMenu');
-
-  function openMenu() {
-    dropdown.classList.add('show');
-  }
-  function closeMenu() {
-    dropdown.classList.remove('show');
-  }
-
+  function closeMenu() { dropdown.classList.remove('show'); }
+  function openMenu() { dropdown.classList.add('show'); }
   hamburger.addEventListener('click', (e) => {
     e.stopPropagation();
-    if (dropdown.classList.contains('show')) {
-      closeMenu();
-    } else {
-      openMenu();
-    }
+    if (dropdown.classList.contains('show')) closeMenu();
+    else openMenu();
   });
-  // Fermeture en cliquant n'importe où ailleurs (sauf sur le menu)
   document.addEventListener('click', (e) => {
-    if (!hamburger.contains(e.target) && !dropdown.contains(e.target)) {
-      closeMenu();
-    }
+    if (!hamburger.contains(e.target) && !dropdown.contains(e.target)) closeMenu();
   });
   document.querySelectorAll('.dropdown-menu a').forEach(link => {
     link.addEventListener('click', (e) => {
@@ -668,7 +849,7 @@
     localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
   });
 
-  // Effet d'illumination toggle (clic sur fond)
+  // Effet d'illumination toggle
   let glowEnabled = false;
   document.body.addEventListener('click', (e) => {
     if (!e.target.closest('.hamburger') && !e.target.closest('.dropdown-menu') && !e.target.closest('button') && !e.target.closest('input')) {
@@ -680,7 +861,7 @@
     }
   });
 
-  // Initialisation (page d'accueil par défaut)
+  // Initialisation
   switchPage('home');
 </script>
 </body>
