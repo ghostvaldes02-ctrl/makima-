@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
@@ -16,7 +16,7 @@
       --text: #eef2ff;
       --text-muted: #8a8f9e;
       --accent: #ff2a6d;
-      --accent-light: #ff88b0;   /* AJOUTÉ : variable manquante */
+      --accent-light: #ff88b0;
       --accent-glow: rgba(255, 42, 109, 0.3);
       --border: #2a2e3a;
       --card-bg: rgba(21, 24, 30, 0.8);
@@ -49,21 +49,61 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      overflow-x: hidden;
+    }
+    /* Fond 3D dynamique */
+    .bg-3d {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      transform: translateZ(-80px) scale(1.2);
+      transition: transform 0.15s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      will-change: transform;
+    }
+    .bg-3d::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 30% 20%, #ff2a6d20, #0a0008 90%);
+    }
+    body.light .bg-3d::before {
+      background: radial-gradient(circle at 30% 20%, #ff2a6d10, #fff0f5 90%);
+    }
+    .bg-3d::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(45deg, #ff2a6d08 0px, #ff2a6d08 2px, transparent 2px, transparent 8px);
+      pointer-events: none;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse, #1a0010 0%, #050002 100%);
+      opacity: 0.9;
+      z-index: -1;
+    }
+    body.light::after {
+      background: radial-gradient(ellipse, #fff0f5 0%, #ffe4ec 100%);
+      opacity: 0.9;
+    }
+    /* Conteneur principal avec effet 3D souris */
+    .perspective-wrapper {
+      perspective: 1200px;
+      transform-style: preserve-3d;
     }
     .container {
       max-width: 700px;
       margin: 0 auto;
       position: relative;
       z-index: 2;
-      flex: 1;
-    }
-    .perspective-wrapper {
-      perspective: 1200px;
-      transform-style: preserve-3d;
-    }
-    .container {
-      transform: translateZ(20px);
-      transition: transform 0.2s;
+      transform: translateZ(30px);
+      transition: transform 0.2s ease-out;
+      min-height: 400px;
     }
     /* Header */
     .header {
@@ -96,6 +136,8 @@
       width: 40px;
       align-items: center;
       transition: var(--transition);
+      position: relative;
+      z-index: 1002;
     }
     .hamburger:hover {
       background: var(--surface-hover);
@@ -116,7 +158,7 @@
       border: 1px solid var(--border);
       border-radius: 16px;
       min-width: 200px;
-      z-index: 1000;
+      z-index: 1001;
       box-shadow: 0 15px 30px rgba(0,0,0,0.4);
       overflow: hidden;
       display: none;
@@ -155,7 +197,7 @@
       background: var(--surface-hover);
       border-color: var(--accent);
     }
-    /* Cards */
+    /* CARTES - animations d'apparition */
     .card {
       background: var(--card-bg);
       backdrop-filter: blur(12px);
@@ -163,12 +205,37 @@
       border-radius: 28px;
       padding: 1.2rem;
       margin-bottom: 1.5rem;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: transform 0.4s cubic-bezier(0.2, 0.85, 0.3, 1.1), 
+                  box-shadow 0.4s cubic-bezier(0.2, 0.85, 0.3, 1.1), 
+                  border-color 0.2s ease;
+      animation-duration: 0.9s;
+      animation-timing-function: cubic-bezier(0.18, 0.89, 0.32, 1.02);
+      animation-fill-mode: forwards;
+      opacity: 0;
     }
+    @keyframes fadeSlideLeft {
+      0% { opacity: 0; transform: translateX(-40px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeSlideRight {
+      0% { opacity: 0; transform: translateX(40px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeSlideUp {
+      0% { opacity: 0; transform: translateY(40px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .card.animate-left { animation-name: fadeSlideLeft; }
+    .card.animate-right { animation-name: fadeSlideRight; }
+    .card.animate-up { animation-name: fadeSlideUp; }
     .card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow);
+      transform: translateY(-6px) translateZ(15px);
+      box-shadow: var(--shadow), 0 0 0 1px var(--accent);
       border-color: var(--accent);
+    }
+    .card:active {
+      transform: scale(0.99);
+      transition: transform 0.05s;
     }
     .card-title {
       font-size: 1.2rem;
@@ -177,6 +244,15 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
+    }
+    /* Effet rebondissant au clic sur les images et cartes */
+    .bounce-click {
+      animation: bounceAnim 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    @keyframes bounceAnim {
+      0% { transform: scale(1); }
+      50% { transform: scale(0.97); }
+      100% { transform: scale(1); }
     }
     /* Formulaires */
     .input-group {
@@ -210,6 +286,25 @@
       border: none;
       cursor: pointer;
       font-weight: 600;
+      transition: 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    button::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transition: width 0.4s, height 0.4s;
+      transform: translate(-50%, -50%);
+    }
+    button:hover::before {
+      width: 200px;
+      height: 200px;
     }
     button:hover {
       opacity: 0.9;
@@ -236,7 +331,6 @@
     .input-group:focus-within .floating-help {
       opacity: 1;
     }
-    /* Quand l'utilisateur a saisi quelque chose, on cache le message */
     .input-group.has-value .floating-help {
       opacity: 0 !important;
     }
@@ -317,7 +411,7 @@
       vertical-align: middle;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    /* Effet d'illumination */
+    /* Effet d'illumination toggle */
     .glow-active {
       box-shadow: 0 0 0 2px var(--accent), 0 0 20px var(--accent-glow);
       transition: 0.1s;
@@ -396,6 +490,24 @@
       font-weight: 500;
       font-size: 0.75rem;
       transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-btn::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255,42,109,0.3);
+      transition: width 0.4s, height 0.4s;
+      transform: translate(-50%, -50%);
+    }
+    .contact-btn:hover::before {
+      width: 150px;
+      height: 150px;
     }
     .contact-btn:hover {
       background: var(--accent);
@@ -409,9 +521,7 @@
       display: block;
       margin: 0 auto;
       transition: transform 0.3s;
-    }
-    .home-image:hover {
-      transform: scale(1.02);
+      cursor: pointer;
     }
     .footer {
       text-align: center;
@@ -453,11 +563,48 @@
       border-radius: 20px;
       margin: 0.8rem 0;
       border: 1px solid var(--border);
+      transition: transform 0.2s;
+      cursor: pointer;
     }
-    .credit-text {
+    /* Transitions entre pages - ralenties */
+    .page {
+      transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
+                  transform 0.7s cubic-bezier(0.2, 0.9, 0.4, 1);
+      opacity: 0;
+      transform: scale(0.97) translateY(12px);
+      visibility: hidden;
+      position: absolute;
+      width: 100%;
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+    .page.active-page {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      visibility: visible;
+      position: relative;
+      pointer-events: auto;
+    }
+    /* Bouton contact créateur */
+    .creator-contact-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, #25d366, #128c7e);
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 60px;
+      text-decoration: none;
+      font-weight: 600;
       font-size: 0.85rem;
-      line-height: 1.5;
-      color: var(--text-muted);
+      margin-top: 1rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+    .creator-contact-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
     }
     @media (max-width: 600px) {
       .container { max-width: 95%; }
@@ -467,8 +614,9 @@
   </style>
 </head>
 <body>
+<div class="bg-3d" id="bg3d"></div>
 <div class="perspective-wrapper">
-<div class="container">
+<div class="container" id="mainContainer">
   <div class="header">
     <div class="logo">MAKIMA M-DX</div>
     <div style="display: flex; gap: 0.8rem; align-items: center;">
@@ -479,20 +627,20 @@
     </div>
   </div>
   <div class="dropdown-menu" id="dropdownMenu">
-    <a data-page="home">▻ Accueil</a>
-    <a data-page="profile">▻ Mon compte</a>
-    <a data-page="pairing">▻ Pairing WhatsApp</a>
-    <a data-page="deployment">▻ Connexion en cours</a>
-    <a data-page="credits">▻ Crédits</a>
+    <a data-page="home">Accueil</a>
+    <a data-page="profile">Mon compte</a>
+    <a data-page="pairing">Pairing WhatsApp</a>
+    <a data-page="deployment">Connexion en cours</a>
+    <a data-page="credits">Crédits</a>
   </div>
 
   <!-- PAGE ACCUEIL -->
   <div id="homePage" class="page">
-    <div class="card">
+    <div class="card" data-animation="left">
       <div class="card-title"><i class="fas fa-home"></i> Accueil</div>
       <div style="text-align: center;">
-        <div class="preview-badge">Aperçu d'un des Projets de The Darkness</div>
-        <img src="https://files.catbox.moe/erp250.jpg" alt="MAKIMA" class="home-image">
+        <div class="preview-badge">◉ Aperçu d'un des Projets de The Darkness ◉</div>
+        <img src="https://files.catbox.moe/erp250.jpg" alt="MAKIMA" class="home-image" id="homeImage">
       </div>
       <p style="text-align: center; font-size:0.85rem; margin: 0.8rem 0;">
         Solution WhatsApp nouvelle génération. Créez un compte, vérifiez votre email, connectez-vous et gérez votre appairage.
@@ -512,59 +660,62 @@
   </div>
 
   <!-- PAGE MON COMPTE -->
-  <div id="profilePage" class="page" style="display: none;">
-    <div class="card">
+  <div id="profilePage" class="page">
+    <div class="card" data-animation="right">
       <div class="card-title"><i class="fas fa-user-circle"></i> Mon Profil</div>
       <div id="profileContent"></div>
     </div>
   </div>
 
   <!-- PAGE PAIRING -->
-  <div id="pairingPage" class="page" style="display: none;">
-    <div class="card">
+  <div id="pairingPage" class="page">
+    <div class="card" data-animation="up">
       <div class="card-title"><i class="fab fa-whatsapp"></i> Lier votre WhatsApp</div>
       <div style="text-align: center; margin-bottom: 1rem;">
-        <img src="https://files.catbox.moe/ymtwvw.jpg" alt="whatsapp" style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--accent);">
+        <img src="https://files.catbox.moe/ymtwvw.jpg" alt="whatsapp" class="bounce-on-click" style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--accent); cursor: pointer;">
       </div>
       <div id="pairingContent"></div>
     </div>
   </div>
 
   <!-- PAGE CONNEXION EN COURS -->
-  <div id="deploymentPage" class="page" style="display: none;">
-    <div class="card">
+  <div id="deploymentPage" class="page">
+    <div class="card" data-animation="left">
       <div class="card-title"><i class="fas fa-plug"></i> Connexion en cours</div>
       <div id="deploymentContent"></div>
     </div>
   </div>
 
   <!-- PAGE CRÉDITS -->
-  <div id="creditsPage" class="page" style="display: none;">
-    <div class="card">
+  <div id="creditsPage" class="page">
+    <div class="card" data-animation="right">
       <div class="card-title"><i class="fas fa-star"></i> Crédits</div>
       <div class="credits-container">
         <div class="credit-card">
           <div class="credit-title">
             VALDES / THE DARKNESS
-            <span class="glowing-badge">Créateur</span>   <!-- Texte ajouté -->
+            <span class="glowing-badge">Créateur</span>
           </div>
           <div class="profile-row" style="margin-top:0.5rem;">
-            <img src="https://files.catbox.moe/vlmmwm.jpg" class="avatar" alt="avatar" style="width:60px; height:60px;">
+            <img src="https://files.catbox.moe/vlmmwm.jpg" class="avatar bounce-on-click" alt="avatar" style="width:60px; height:60px; cursor: pointer;">
             <div class="credit-text" style="flex:1;">
               Développeur camerounais, créateur de solutions WhatsApp alliant esthétique sombre, culture anime et rigueur technique.
             </div>
           </div>
+          <a href="https://wa.me/237671281938" class="creator-contact-btn" target="_blank">
+            <i class="fab fa-whatsapp"></i> Contacter le créateur
+          </a>
         </div>
         <div class="credit-card">
           <div class="credit-title">🟢 Makima M-DX</div>
-          <img src="https://files.catbox.moe/erp250.jpg" alt="Makima M-DX" class="credit-img">
+          <img src="https://files.catbox.moe/erp250.jpg" alt="Makima M-DX" class="credit-img bounce-on-click">
           <div class="credit-text">
             Bot inspiré du personnage de Makima. Identité visuelle unique, ton incisif, commandes réactives et design soigné.
           </div>
         </div>
         <div class="credit-card">
           <div class="credit-title">🟢 Darkness X-MD</div>
-          <img src="https://files.catbox.moe/5p71ef.jpg" alt="Darkness X-MD" class="credit-img">
+          <img src="https://files.catbox.moe/5p71ef.jpg" alt="Darkness X-MD" class="credit-img bounce-on-click">
           <div class="credit-text">
             Assistant WhatsApp polyvalent et modulaire : modération, téléchargement, IA, commandes interactives. Alliance de puissance technique et ambiance mystérieuse.
           </div>
@@ -575,13 +726,82 @@
       </div>
     </div>
   </div>
-</div>
-<div class="footer">
-  © 2026 THE DARKNESS — MAKIMA M-DX | ◉ VALDES
+
+  <div class="footer">
+    © 2026 THE DARKNESS — MAKIMA M-DX | ◉ VALDES
+  </div>
 </div>
 </div>
 
 <script>
+  // ==================== EFFET 3D SOURIS ====================
+  const bg = document.getElementById('bg3d');
+  const container = document.getElementById('mainContainer');
+  if (bg && container) {
+    document.addEventListener('mousemove', (e) => {
+      const x = (e.clientX / window.innerWidth) * 30 - 15;
+      const y = (e.clientY / window.innerHeight) * 20 - 10;
+      bg.style.transform = `translateZ(-80px) translateX(${x * 0.4}px) translateY(${y * 0.3}px) scale(1.2)`;
+      container.style.transform = `translateZ(30px) rotateX(${y * 0.03}deg) rotateY(${x * 0.03}deg)`;
+    });
+  }
+
+  // ==================== ANIMATION DES CARTES AU SCROLL ====================
+  const cards = document.querySelectorAll('.card');
+  function animateCard(card) {
+    if (card.classList.contains('animated')) return;
+    const direction = card.getAttribute('data-animation') || 'left';
+    let animClass = '';
+    if (direction === 'left') animClass = 'animate-left';
+    else if (direction === 'right') animClass = 'animate-right';
+    else if (direction === 'up') animClass = 'animate-up';
+    else animClass = 'animate-left';
+    card.classList.add(animClass, 'animated');
+    card.style.opacity = '1';
+  }
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animateCard(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2, rootMargin: "0px 0px -30px 0px" });
+  cards.forEach(card => {
+    card.style.opacity = '0';
+    observer.observe(card);
+  });
+  setTimeout(() => {
+    cards.forEach(card => {
+      const rect = card.getBoundingClientRect();
+      if (rect.top < window.innerHeight - 80 && rect.bottom > 60) {
+        if (!card.classList.contains('animated')) {
+          animateCard(card);
+          observer.unobserve(card);
+        }
+      }
+    });
+  }, 200);
+
+  // ==================== EFFET REBONDISSANT AU CLIC ====================
+  function addBounceEffect(elements) {
+    elements.forEach(el => {
+      if (!el) return;
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        el.classList.add('bounce-click');
+        setTimeout(() => {
+          el.classList.remove('bounce-click');
+        }, 300);
+      });
+    });
+  }
+  // Appliquer l'effet à l'image d'accueil, aux images des crédits, etc.
+  const homeImg = document.getElementById('homeImage');
+  const bounceImages = document.querySelectorAll('.bounce-on-click');
+  addBounceEffect([homeImg]);
+  addBounceEffect(Array.from(bounceImages));
+
   // ==================== SYSTÈME DE COMPTES (localStorage) ====================
   const STORAGE_KEY = 'makima_users';
   const SESSION_KEY = 'makima_current_user';
@@ -597,7 +817,6 @@
   function sendVerificationCode(email, code) { alert(`Code de vérification (simulation) : ${code}\nEnvoyé à ${email}`); }
   function generateCode() { return Math.floor(100000 + Math.random() * 900000).toString(); }
 
-  // Helper pour ajouter les messages flottants et la détection de saisie
   function setupFloatingHelp(inputElement, helpText) {
     if (!inputElement) return;
     const wrapper = inputElement.closest('.input-group');
@@ -606,31 +825,22 @@
     helpSpan.className = 'floating-help';
     helpSpan.textContent = helpText;
     wrapper.appendChild(helpSpan);
-    // Détecter la saisie pour masquer le message
     inputElement.addEventListener('input', function() {
-      if (this.value.length > 0) {
-        wrapper.classList.add('has-value');
-      } else {
-        wrapper.classList.remove('has-value');
-      }
+      if (this.value.length > 0) wrapper.classList.add('has-value');
+      else wrapper.classList.remove('has-value');
     });
-    // Au focus, si pas de valeur, le message apparaît (via CSS)
-    // On gère aussi le blur pour remettre l'état si vide
     inputElement.addEventListener('blur', function() {
-      if (this.value.length === 0) {
-        wrapper.classList.remove('has-value');
-      }
+      if (this.value.length === 0) wrapper.classList.remove('has-value');
     });
   }
 
-  // Mise à jour de l'affichage du profil (avec les messages flottants)
   function updateProfileUI() {
-    const container = document.getElementById('profileContent');
+    const containerDiv = document.getElementById('profileContent');
     const user = getCurrentUser();
     if (!user) {
-      container.innerHTML = `
+      containerDiv.innerHTML = `
         <div class="profile-row">
-          <img src="https://files.catbox.moe/vlmmwm.jpg" class="avatar" alt="avatar">
+          <img src="https://files.catbox.moe/vlmmwm.jpg" class="avatar bounce-on-click" alt="avatar" style="cursor: pointer;">
           <div><strong>Non connecté</strong><br>Créez un compte ou connectez-vous</div>
         </div>
         <div class="auth-tabs" id="authTabs">
@@ -651,15 +861,15 @@
           <div id="registerMessage"></div>
         </div>
       `;
-      // Ajouter les messages flottants pour les champs d'inscription
       const regUser = document.getElementById('regUsername');
       const regMail = document.getElementById('regEmail');
       const regPass = document.getElementById('regPassword');
       setupFloatingHelp(regUser, "Choisissez un pseudo unique (ex: Valdes)");
       setupFloatingHelp(regMail, "Entrez votre email valide (ex: valdes@exemple.com)");
       setupFloatingHelp(regPass, "Minimum 6 caractères, lettres/chiffres acceptés");
+      // Appliquer effet rebond aux nouveaux éléments
+      addBounceEffect([document.querySelector('#profileContent .avatar')]);
 
-      // Gestion des onglets
       document.getElementById('showLoginBtn')?.addEventListener('click', () => {
         document.getElementById('loginForm').style.display = 'block';
         document.getElementById('registerForm').style.display = 'none';
@@ -708,35 +918,57 @@
       return;
     }
     // Utilisateur connecté
-    container.innerHTML = `
+    containerDiv.innerHTML = `
       <div class="profile-row">
-        <img src="https://files.catbox.moe/vlmmwm.jpg" class="avatar" alt="avatar">
+        <img src="https://files.catbox.moe/vlmmwm.jpg" class="avatar bounce-on-click" alt="avatar" style="cursor: pointer;">
         <div><strong>${user.username}</strong><br>${user.email}<br><span class="status-badge">Connecté</span></div>
       </div>
       <div class="input-group"><label>Nom d'affichage</label><input type="text" value="${user.username}" disabled></div>
       <div class="input-group"><label>Email</label><input type="text" value="${user.email}" disabled></div>
       <div><strong>WhatsApp lié :</strong> ${user.whatsappNumber || 'Non renseigné'}</div>
-      <button id="logoutSecureBtn" style="margin-top:1rem; background:transparent; border:1px solid var(--accent); color:var(--accent);">Se déconnecter</button>
-      <div id="logoutMessage"></div>
+      <!-- Formulaire de déconnexion sécurisée -->
+      <div style="margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+        <h4 style="margin-bottom: 0.8rem; color: var(--accent);">Déconnexion sécurisée</h4>
+        <div class="input-group"><label>Email ou pseudo</label><input type="text" id="logoutIdentifier" placeholder="Votre email ou pseudo"></div>
+        <div class="input-group"><label>Mot de passe</label><input type="password" id="logoutPassword" placeholder="Votre mot de passe"></div>
+        <button id="secureLogoutBtn">Se déconnecter</button>
+        <div id="logoutMessage"></div>
+      </div>
     `;
-    document.getElementById('logoutSecureBtn')?.addEventListener('click', () => {
+    addBounceEffect([document.querySelector('#profileContent .avatar')]);
+    document.getElementById('secureLogoutBtn')?.addEventListener('click', () => {
+      const identifier = document.getElementById('logoutIdentifier').value.trim();
+      const password = document.getElementById('logoutPassword').value.trim();
+      const current = getCurrentUser();
+      if (!current) {
+        document.getElementById('logoutMessage').innerHTML = '<span class="error-msg">Aucun utilisateur connecté.</span>';
+        return;
+      }
+      // Vérifier que l'identifiant correspond à l'utilisateur connecté et que le mot de passe est bon
+      const user = users.find(u => (u.email === identifier || u.username === identifier) && u.id === current.id);
+      if (!user || user.password !== btoa(password)) {
+        document.getElementById('logoutMessage').innerHTML = '<span class="error-msg">Identifiants incorrects. Déconnexion impossible.</span>';
+        return;
+      }
       clearCurrentUser();
-      updateProfileUI();
-      updatePairingUI();
-      updateDeploymentUI();
+      document.getElementById('logoutMessage').innerHTML = '<span class="success-msg">Déconnecté avec succès.</span>';
+      setTimeout(() => {
+        updateProfileUI();
+        updatePairingUI();
+        updateDeploymentUI();
+      }, 500);
     });
   }
 
-  // Page Pairing (génération code) avec message flottant
   function updatePairingUI() {
-    const container = document.getElementById('pairingContent');
+    const containerDiv = document.getElementById('pairingContent');
     const user = getCurrentUser();
     if (!user) {
-      container.innerHTML = `<div class="error-msg">Connectez-vous pour lier votre WhatsApp</div><button id="goToProfileBtn" style="width:auto;">Aller à Mon compte</button>`;
+      containerDiv.innerHTML = `<div class="error-msg">Connectez-vous pour lier votre WhatsApp</div><button id="goToProfileBtn" style="width:auto;">Aller à Mon compte</button>`;
       document.getElementById('goToProfileBtn')?.addEventListener('click', () => switchPage('profile'));
       return;
     }
-    container.innerHTML = `
+    containerDiv.innerHTML = `
       <div class="input-group" id="pairingInputGroup">
         <label>Numéro WhatsApp (indicatif pays)</label>
         <input type="tel" id="phoneNumber" placeholder="237671410035" maxlength="15">
@@ -744,10 +976,8 @@
       <button id="generatePairBtn">Obtenir le code d'appairage</button>
       <div id="pairResult"></div>
     `;
-    // Ajouter le message flottant pour le numéro de téléphone
     const phoneInput = document.getElementById('phoneNumber');
     setupFloatingHelp(phoneInput, "Exemple: 237671410035 (indicatif pays sans le +)");
-    // Événement du bouton
     document.getElementById('generatePairBtn')?.addEventListener('click', async () => {
       const raw = document.getElementById('phoneNumber').value.trim();
       const clean = raw.replace(/\D/g, '');
@@ -766,19 +996,18 @@
     });
   }
 
-  // Page "Connexion en cours" (simulation)
   let whatsappConnected = false;
   function updateDeploymentUI() {
-    const container = document.getElementById('deploymentContent');
+    const containerDiv = document.getElementById('deploymentContent');
     const user = getCurrentUser();
     if (!user) {
-      container.innerHTML = `<div class="error-msg">Connectez-vous pour voir l'état de votre session WhatsApp</div><button id="goToProfileDeployBtn" style="width:auto;">Aller à Mon compte</button>`;
+      containerDiv.innerHTML = `<div class="error-msg">Connectez-vous pour voir l'état de votre session WhatsApp</div><button id="goToProfileDeployBtn" style="width:auto;">Aller à Mon compte</button>`;
       document.getElementById('goToProfileDeployBtn')?.addEventListener('click', () => switchPage('profile'));
       return;
     }
     const statusText = whatsappConnected ? 'Connecté' : 'Déconnecté';
     const statusColor = whatsappConnected ? 'var(--success)' : '#ef4444';
-    container.innerHTML = `
+    containerDiv.innerHTML = `
       <div style="text-align:center; margin-bottom:1rem;">
         <div style="font-size:2rem;">${whatsappConnected ? '📱' : '⚠️'}</div>
         <div style="font-weight:bold; color:${statusColor};">${statusText}</div>
@@ -800,20 +1029,20 @@
       } else {
         whatsappConnected = false;
         updateDeploymentUI();
-        msgDiv.innerHTML = '<span class="success-msg">Déconnecté.</span>';   // Émoji supprimé
+        msgDiv.innerHTML = '<span class="success-msg">Déconnecté.</span>';
         setTimeout(() => { if (document.getElementById('connectionMessage')) msgDiv.innerHTML = ''; }, 2000);
       }
     });
   }
 
-  // Navigation entre pages
   function switchPage(pageId) {
     const pages = ['home', 'profile', 'pairing', 'deployment', 'credits'];
     pages.forEach(p => {
       const el = document.getElementById(p + 'Page');
-      if (el) el.style.display = 'none';
+      if (el) el.classList.remove('active-page');
     });
-    document.getElementById(pageId + 'Page').style.display = 'block';
+    const activeEl = document.getElementById(pageId + 'Page');
+    if (activeEl) activeEl.classList.add('active-page');
     if (pageId === 'profile') updateProfileUI();
     if (pageId === 'pairing') updatePairingUI();
     if (pageId === 'deployment') updateDeploymentUI();
@@ -849,7 +1078,7 @@
     localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
   });
 
-  // Effet d'illumination toggle
+  // Effet d'illumination toggle (clic sur fond)
   let glowEnabled = false;
   document.body.addEventListener('click', (e) => {
     if (!e.target.closest('.hamburger') && !e.target.closest('.dropdown-menu') && !e.target.closest('button') && !e.target.closest('input')) {
@@ -865,4 +1094,4 @@
   switchPage('home');
 </script>
 </body>
- </html>
+  </html>
