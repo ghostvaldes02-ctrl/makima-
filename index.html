@@ -103,14 +103,14 @@
       z-index: 2;
       transform: translateZ(30px);
       transition: transform 0.2s ease-out;
-      min-height: 400px;
+      min-height: auto;
     }
     /* Header */
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
       flex-wrap: wrap;
       gap: 1rem;
     }
@@ -204,7 +204,7 @@
       border: 1px solid var(--border);
       border-radius: 28px;
       padding: 1.2rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.2rem;
       transition: transform 0.4s cubic-bezier(0.2, 0.85, 0.3, 1.1), 
                   box-shadow 0.4s cubic-bezier(0.2, 0.85, 0.3, 1.1), 
                   border-color 0.2s ease;
@@ -245,7 +245,7 @@
       align-items: center;
       gap: 0.5rem;
     }
-    /* Effet rebondissant au clic sur les images et cartes */
+    /* Effet rebondissant au clic sur les images */
     .bounce-click {
       animation: bounceAnim 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
@@ -256,7 +256,7 @@
     }
     /* Formulaires */
     .input-group {
-      margin-bottom: 1rem;
+      margin-bottom: 0.8rem;
       position: relative;
     }
     label {
@@ -267,7 +267,7 @@
     }
     input, button {
       width: 100%;
-      padding: 0.7rem 1rem;
+      padding: 0.6rem 1rem;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 60px;
@@ -309,6 +309,21 @@
     button:hover {
       opacity: 0.9;
       transform: translateY(-2px);
+    }
+    /* Checkbox style */
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0.8rem 0;
+    }
+    .checkbox-group input {
+      width: auto;
+      margin: 0;
+    }
+    .checkbox-group label {
+      margin: 0;
+      font-size: 0.8rem;
     }
     /* Texte flottant d'aide */
     .floating-help {
@@ -525,16 +540,16 @@
     }
     .footer {
       text-align: center;
-      padding: 1rem;
+      padding: 0.8rem;
       border-top: 1px solid var(--border);
       color: var(--text-muted);
       font-size: 0.7rem;
-      margin-top: 2rem;
+      margin-top: 1.5rem;
     }
     .credits-container {
       display: flex;
       flex-direction: column;
-      gap: 1.2rem;
+      gap: 1rem;
     }
     .credit-card {
       background: var(--surface);
@@ -606,6 +621,22 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
     }
+    /* ReCAPTCHA simulé */
+    .fake-recaptcha {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      margin: 0.8rem 0;
+    }
+    .fake-recaptcha input {
+      width: auto;
+      margin: 0;
+    }
     @media (max-width: 600px) {
       .container { max-width: 95%; }
       .credit-img { max-width: 100%; }
@@ -627,19 +658,23 @@
     </div>
   </div>
   <div class="dropdown-menu" id="dropdownMenu">
-    <a data-page="home">Accueil</a>
-    <a data-page="profile">Mon compte</a>
-    <a data-page="pairing">Pairing WhatsApp</a>
-    <a data-page="deployment">Connexion en cours</a>
-    <a data-page="credits">Crédits</a>
+    <!-- Le contenu sera généré dynamiquement en JS -->
   </div>
 
-  <!-- PAGE ACCUEIL -->
+  <!-- PAGE MON COMPTE (connexion/inscription) -->
+  <div id="profilePage" class="page active-page">
+    <div class="card" data-animation="right">
+      <div class="card-title"><i class="fas fa-user-circle"></i> Mon Profil</div>
+      <div id="profileContent"></div>
+    </div>
+  </div>
+
+  <!-- PAGE ACCUEIL (protégée) -->
   <div id="homePage" class="page">
     <div class="card" data-animation="left">
       <div class="card-title"><i class="fas fa-home"></i> Accueil</div>
       <div style="text-align: center;">
-        <div class="preview-badge">◉ Aperçu d'un des Projets de The Darkness ◉</div>
+        <div class="preview-badge">Aperçu d'un des Projets de The Darkness</div>
         <img src="https://files.catbox.moe/erp250.jpg" alt="MAKIMA" class="home-image" id="homeImage">
       </div>
       <p style="text-align: center; font-size:0.85rem; margin: 0.8rem 0;">
@@ -659,15 +694,7 @@
     </div>
   </div>
 
-  <!-- PAGE MON COMPTE -->
-  <div id="profilePage" class="page">
-    <div class="card" data-animation="right">
-      <div class="card-title"><i class="fas fa-user-circle"></i> Mon Profil</div>
-      <div id="profileContent"></div>
-    </div>
-  </div>
-
-  <!-- PAGE PAIRING -->
+  <!-- PAGE PAIRING (protégée) -->
   <div id="pairingPage" class="page">
     <div class="card" data-animation="up">
       <div class="card-title"><i class="fab fa-whatsapp"></i> Lier votre WhatsApp</div>
@@ -678,7 +705,7 @@
     </div>
   </div>
 
-  <!-- PAGE CONNEXION EN COURS -->
+  <!-- PAGE CONNEXION EN COURS (protégée) -->
   <div id="deploymentPage" class="page">
     <div class="card" data-animation="left">
       <div class="card-title"><i class="fas fa-plug"></i> Connexion en cours</div>
@@ -686,20 +713,20 @@
     </div>
   </div>
 
-  <!-- PAGE CRÉDITS -->
+  <!-- PAGE CRÉDITS (protégée) -->
   <div id="creditsPage" class="page">
     <div class="card" data-animation="right">
       <div class="card-title"><i class="fas fa-star"></i> Crédits</div>
       <div class="credits-container">
         <div class="credit-card">
           <div class="credit-title">
-            VALDES / THE DARKNESS
+             THE DARKNESS
             <span class="glowing-badge">Créateur</span>
           </div>
           <div class="profile-row" style="margin-top:0.5rem;">
             <img src="https://files.catbox.moe/vlmmwm.jpg" class="avatar bounce-on-click" alt="avatar" style="width:60px; height:60px; cursor: pointer;">
             <div class="credit-text" style="flex:1;">
-              Développeur camerounais, créateur de solutions WhatsApp alliant esthétique sombre, culture anime et rigueur technique.
+              Développeur, créateur de solutions & d'idée WhatsApp alliant esthétique sombre, culture anime et rigueur technique.
             </div>
           </div>
           <a href="https://wa.me/237671281938" class="creator-contact-btn" target="_blank">
@@ -707,14 +734,14 @@
           </a>
         </div>
         <div class="credit-card">
-          <div class="credit-title">🟢 Makima M-DX</div>
+          <div class="credit-title">𓁹 Makima M-DX</div>
           <img src="https://files.catbox.moe/erp250.jpg" alt="Makima M-DX" class="credit-img bounce-on-click">
           <div class="credit-text">
             Bot inspiré du personnage de Makima. Identité visuelle unique, ton incisif, commandes réactives et design soigné.
           </div>
         </div>
         <div class="credit-card">
-          <div class="credit-title">🟢 Darkness X-MD</div>
+          <div class="credit-title">𓁹 Darkness X-MD</div>
           <img src="https://files.catbox.moe/5p71ef.jpg" alt="Darkness X-MD" class="credit-img bounce-on-click">
           <div class="credit-text">
             Assistant WhatsApp polyvalent et modulaire : modération, téléchargement, IA, commandes interactives. Alliance de puissance technique et ambiance mystérieuse.
@@ -724,6 +751,14 @@
           © 2026 THE DARKNESS — Tous droits réservés
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- PAGE DÉCONNEXION (protégée) -->
+  <div id="logoutPage" class="page">
+    <div class="card" data-animation="up">
+      <div class="card-title"><i class="fas fa-sign-out-alt"></i> Déconnexion sécurisée</div>
+      <div id="logoutContent"></div>
     </div>
   </div>
 
@@ -796,7 +831,6 @@
       });
     });
   }
-  // Appliquer l'effet à l'image d'accueil, aux images des crédits, etc.
   const homeImg = document.getElementById('homeImage');
   const bounceImages = document.querySelectorAll('.bounce-on-click');
   addBounceEffect([homeImg]);
@@ -834,15 +868,40 @@
     });
   }
 
+  // Mise à jour du menu hamburger selon l'état de connexion
+  function updateMenu() {
+    const isLoggedIn = !!getCurrentUser();
+    const menuContainer = document.getElementById('dropdownMenu');
+    if (isLoggedIn) {
+      menuContainer.innerHTML = `
+        <a data-page="home">Accueil</a>
+        <a data-page="profile">Mon compte</a>
+        <a data-page="pairing">Pairing WhatsApp</a>
+        <a data-page="deployment">Connexion en cours</a>
+        <a data-page="credits">Crédits</a>
+        <a data-page="logout">Déconnexion</a>
+      `;
+    } else {
+      menuContainer.innerHTML = `
+        <a data-page="profile">Mon compte</a>
+      `;
+    }
+    // Réattacher les événements aux nouveaux liens
+    document.querySelectorAll('.dropdown-menu a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        const page = link.getAttribute('data-page');
+        if (page) switchPage(page);
+        closeMenu();
+      });
+    });
+  }
+
+  // Mise à jour de l'affichage du profil (connexion/inscription + infos)
   function updateProfileUI() {
     const containerDiv = document.getElementById('profileContent');
     const user = getCurrentUser();
     if (!user) {
       containerDiv.innerHTML = `
-        <div class="profile-row">
-          <img src="https://files.catbox.moe/vlmmwm.jpg" class="avatar bounce-on-click" alt="avatar" style="cursor: pointer;">
-          <div><strong>Non connecté</strong><br>Créez un compte ou connectez-vous</div>
-        </div>
         <div class="auth-tabs" id="authTabs">
           <button id="showLoginBtn" class="active">Connexion</button>
           <button id="showRegisterBtn">Inscription</button>
@@ -850,15 +909,38 @@
         <div id="loginForm">
           <div class="input-group"><label>Email ou pseudo</label><input type="text" id="loginIdentifier" placeholder="exemple@domaine.com"></div>
           <div class="input-group"><label>Mot de passe</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
+          <div class="fake-recaptcha">
+            <input type="checkbox" id="recaptchaLogin"> <label>Je ne suis pas un robot</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="rememberMe"> <label>Se souvenir de moi</label>
+          </div>
           <button id="doLoginBtn">Se connecter</button>
           <div id="loginMessage"></div>
+          <div style="text-align: center; margin-top: 0.8rem;">
+            <a href="#" id="forgotPasswordLink" style="color: var(--accent); font-size: 0.75rem;">Mot de passe oublié ?</a>
+          </div>
+          <div style="text-align: center; margin-top: 0.5rem;">
+            <button id="switchToRegisterBtn" style="background: transparent; border: 1px solid var(--accent); color: var(--accent); width: auto;">Enregistrer un nouveau membre</button>
+          </div>
         </div>
         <div id="registerForm" style="display:none;">
-          <div class="input-group"><label>Pseudo</label><input type="text" id="regUsername" placeholder="Pseudo"></div>
-          <div class="input-group"><label>Email</label><input type="email" id="regEmail" placeholder="Email"></div>
+          <div class="input-group"><label>Nom d'utilisateur</label><input type="text" id="regUsername" placeholder="Pseudo"></div>
+          <div class="input-group"><label>Adresse email</label><input type="email" id="regEmail" placeholder="Email"></div>
           <div class="input-group"><label>Mot de passe</label><input type="password" id="regPassword" placeholder="Min 6 caractères"></div>
-          <button id="doRegisterBtn">Créer mon compte</button>
+          <div class="input-group"><label>Retapez le mot de passe</label><input type="password" id="regPasswordConfirm" placeholder=""></div>
+          <div class="input-group"><label>Code de parrainage (optionnel)</label><input type="text" id="referralCode" placeholder=""></div>
+          <div class="fake-recaptcha">
+            <input type="checkbox" id="recaptchaRegister"> <label>Je ne suis pas un robot</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="acceptTerms"> <label>J'accepte les Conditions</label>
+          </div>
+          <button id="doRegisterBtn">Inscription</button>
           <div id="registerMessage"></div>
+          <div style="text-align: center; margin-top: 0.5rem;">
+            <button id="switchToLoginBtn" style="background: transparent; border: 1px solid var(--accent); color: var(--accent); width: auto;">Je possède déjà un compte</button>
+          </div>
         </div>
       `;
       const regUser = document.getElementById('regUsername');
@@ -867,24 +949,40 @@
       setupFloatingHelp(regUser, "Choisissez un pseudo unique (ex: Valdes)");
       setupFloatingHelp(regMail, "Entrez votre email valide (ex: valdes@exemple.com)");
       setupFloatingHelp(regPass, "Minimum 6 caractères, lettres/chiffres acceptés");
-      // Appliquer effet rebond aux nouveaux éléments
-      addBounceEffect([document.querySelector('#profileContent .avatar')]);
 
-      document.getElementById('showLoginBtn')?.addEventListener('click', () => {
+      // Gestion onglets
+      document.getElementById('showLoginBtn').addEventListener('click', () => {
         document.getElementById('loginForm').style.display = 'block';
         document.getElementById('registerForm').style.display = 'none';
         document.getElementById('showLoginBtn').classList.add('active');
         document.getElementById('showRegisterBtn').classList.remove('active');
       });
-      document.getElementById('showRegisterBtn')?.addEventListener('click', () => {
+      document.getElementById('showRegisterBtn').addEventListener('click', () => {
         document.getElementById('loginForm').style.display = 'none';
         document.getElementById('registerForm').style.display = 'block';
         document.getElementById('showRegisterBtn').classList.add('active');
         document.getElementById('showLoginBtn').classList.remove('active');
       });
-      document.getElementById('doLoginBtn')?.addEventListener('click', () => {
+      document.getElementById('switchToRegisterBtn').addEventListener('click', () => {
+        document.getElementById('showRegisterBtn').click();
+      });
+      document.getElementById('switchToLoginBtn').addEventListener('click', () => {
+        document.getElementById('showLoginBtn').click();
+      });
+      document.getElementById('forgotPasswordLink').addEventListener('click', (e) => {
+        e.preventDefault();
+        alert("Fonctionnalité à venir : réinitialisation par email.");
+      });
+
+      // Connexion
+      document.getElementById('doLoginBtn').addEventListener('click', () => {
         const identifier = document.getElementById('loginIdentifier').value.trim();
         const password = document.getElementById('loginPassword').value.trim();
+        const recaptcha = document.getElementById('recaptchaLogin').checked;
+        if (!recaptcha) {
+          document.getElementById('loginMessage').innerHTML = '<span class="error-msg">Veuillez cocher "Je ne suis pas un robot".</span>';
+          return;
+        }
         const user = users.find(u => (u.email === identifier || u.username === identifier) && u.password === btoa(password));
         if (!user) { document.getElementById('loginMessage').innerHTML = '<span class="error-msg">Identifiants incorrects</span>'; return; }
         if (!user.verified) { document.getElementById('loginMessage').innerHTML = '<span class="error-msg">Compte non vérifié</span>'; return; }
@@ -892,12 +990,23 @@
         updateProfileUI();
         updatePairingUI();
         updateDeploymentUI();
+        updateMenu();
+        // Rediriger vers la page d'accueil après connexion
+        switchPage('home');
       });
-      document.getElementById('doRegisterBtn')?.addEventListener('click', () => {
+
+      // Inscription
+      document.getElementById('doRegisterBtn').addEventListener('click', () => {
         const username = document.getElementById('regUsername').value.trim();
         const email = document.getElementById('regEmail').value.trim();
         const password = document.getElementById('regPassword').value.trim();
+        const passwordConfirm = document.getElementById('regPasswordConfirm').value.trim();
+        const recaptcha = document.getElementById('recaptchaRegister').checked;
+        const acceptTerms = document.getElementById('acceptTerms').checked;
         if (!username || !email || password.length < 6) { document.getElementById('registerMessage').innerHTML = '<span class="error-msg">Champs invalides (mdp min 6)</span>'; return; }
+        if (password !== passwordConfirm) { document.getElementById('registerMessage').innerHTML = '<span class="error-msg">Les mots de passe ne correspondent pas.</span>'; return; }
+        if (!recaptcha) { document.getElementById('registerMessage').innerHTML = '<span class="error-msg">Veuillez cocher "Je ne suis pas un robot".</span>'; return; }
+        if (!acceptTerms) { document.getElementById('registerMessage').innerHTML = '<span class="error-msg">Vous devez accepter les conditions.</span>'; return; }
         if (users.find(u => u.email === email || u.username === username)) { document.getElementById('registerMessage').innerHTML = '<span class="error-msg">Email ou pseudo déjà utilisé</span>'; return; }
         const code = generateCode();
         localStorage.setItem(VERIF_KEY, JSON.stringify({ username, email, password: btoa(password), code }));
@@ -917,7 +1026,7 @@
       });
       return;
     }
-    // Utilisateur connecté
+    // Utilisateur connecté : affichage des infos
     containerDiv.innerHTML = `
       <div class="profile-row">
         <img src="https://files.catbox.moe/vlmmwm.jpg" class="avatar bounce-on-click" alt="avatar" style="cursor: pointer;">
@@ -926,48 +1035,15 @@
       <div class="input-group"><label>Nom d'affichage</label><input type="text" value="${user.username}" disabled></div>
       <div class="input-group"><label>Email</label><input type="text" value="${user.email}" disabled></div>
       <div><strong>WhatsApp lié :</strong> ${user.whatsappNumber || 'Non renseigné'}</div>
-      <!-- Formulaire de déconnexion sécurisée -->
-      <div style="margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1rem;">
-        <h4 style="margin-bottom: 0.8rem; color: var(--accent);">Déconnexion sécurisée</h4>
-        <div class="input-group"><label>Email ou pseudo</label><input type="text" id="logoutIdentifier" placeholder="Votre email ou pseudo"></div>
-        <div class="input-group"><label>Mot de passe</label><input type="password" id="logoutPassword" placeholder="Votre mot de passe"></div>
-        <button id="secureLogoutBtn">Se déconnecter</button>
-        <div id="logoutMessage"></div>
-      </div>
     `;
     addBounceEffect([document.querySelector('#profileContent .avatar')]);
-    document.getElementById('secureLogoutBtn')?.addEventListener('click', () => {
-      const identifier = document.getElementById('logoutIdentifier').value.trim();
-      const password = document.getElementById('logoutPassword').value.trim();
-      const current = getCurrentUser();
-      if (!current) {
-        document.getElementById('logoutMessage').innerHTML = '<span class="error-msg">Aucun utilisateur connecté.</span>';
-        return;
-      }
-      // Vérifier que l'identifiant correspond à l'utilisateur connecté et que le mot de passe est bon
-      const user = users.find(u => (u.email === identifier || u.username === identifier) && u.id === current.id);
-      if (!user || user.password !== btoa(password)) {
-        document.getElementById('logoutMessage').innerHTML = '<span class="error-msg">Identifiants incorrects. Déconnexion impossible.</span>';
-        return;
-      }
-      clearCurrentUser();
-      document.getElementById('logoutMessage').innerHTML = '<span class="success-msg">Déconnecté avec succès.</span>';
-      setTimeout(() => {
-        updateProfileUI();
-        updatePairingUI();
-        updateDeploymentUI();
-      }, 500);
-    });
   }
 
+  // Page Pairing
   function updatePairingUI() {
     const containerDiv = document.getElementById('pairingContent');
     const user = getCurrentUser();
-    if (!user) {
-      containerDiv.innerHTML = `<div class="error-msg">Connectez-vous pour lier votre WhatsApp</div><button id="goToProfileBtn" style="width:auto;">Aller à Mon compte</button>`;
-      document.getElementById('goToProfileBtn')?.addEventListener('click', () => switchPage('profile'));
-      return;
-    }
+    if (!user) return; // ne devrait pas arriver car page protégée
     containerDiv.innerHTML = `
       <div class="input-group" id="pairingInputGroup">
         <label>Numéro WhatsApp (indicatif pays)</label>
@@ -996,15 +1072,12 @@
     });
   }
 
+  // Page Connexion en cours
   let whatsappConnected = false;
   function updateDeploymentUI() {
     const containerDiv = document.getElementById('deploymentContent');
     const user = getCurrentUser();
-    if (!user) {
-      containerDiv.innerHTML = `<div class="error-msg">Connectez-vous pour voir l'état de votre session WhatsApp</div><button id="goToProfileDeployBtn" style="width:auto;">Aller à Mon compte</button>`;
-      document.getElementById('goToProfileDeployBtn')?.addEventListener('click', () => switchPage('profile'));
-      return;
-    }
+    if (!user) return;
     const statusText = whatsappConnected ? 'Connecté' : 'Déconnecté';
     const statusColor = whatsappConnected ? 'var(--success)' : '#ef4444';
     containerDiv.innerHTML = `
@@ -1035,8 +1108,59 @@
     });
   }
 
+  // Page Déconnexion (sécurisée)
+  function updateLogoutUI() {
+    const containerDiv = document.getElementById('logoutContent');
+    const user = getCurrentUser();
+    if (!user) {
+      containerDiv.innerHTML = `<div class="error-msg">Vous n'êtes pas connecté.</div><button id="goToProfileLogoutBtn" style="width:auto;">Aller à Mon compte</button>`;
+      document.getElementById('goToProfileLogoutBtn')?.addEventListener('click', () => switchPage('profile'));
+      return;
+    }
+    containerDiv.innerHTML = `
+      <div class="profile-row">
+        <img src="https://files.catbox.moe/vlmmwm.jpg" class="avatar" alt="avatar" style="width:50px; height:50px;">
+        <div><strong>${user.username}</strong><br>${user.email}</div>
+      </div>
+      <div class="input-group"><label>Email ou pseudo</label><input type="text" id="logoutIdentifier" placeholder="Votre email ou pseudo"></div>
+      <div class="input-group"><label>Mot de passe</label><input type="password" id="logoutPassword" placeholder="Votre mot de passe"></div>
+      <button id="secureLogoutBtn">Se déconnecter</button>
+      <div id="logoutMessage"></div>
+    `;
+    document.getElementById('secureLogoutBtn')?.addEventListener('click', () => {
+      const identifier = document.getElementById('logoutIdentifier').value.trim();
+      const password = document.getElementById('logoutPassword').value.trim();
+      const current = getCurrentUser();
+      if (!current) {
+        document.getElementById('logoutMessage').innerHTML = '<span class="error-msg">Aucun utilisateur connecté.</span>';
+        return;
+      }
+      const user = users.find(u => (u.email === identifier || u.username === identifier) && u.id === current.id);
+      if (!user || user.password !== btoa(password)) {
+        document.getElementById('logoutMessage').innerHTML = '<span class="error-msg">Identifiants incorrects. Déconnexion impossible.</span>';
+        return;
+      }
+      clearCurrentUser();
+      document.getElementById('logoutMessage').innerHTML = '<span class="success-msg">Déconnecté avec succès.</span>';
+      setTimeout(() => {
+        updateProfileUI();
+        updatePairingUI();
+        updateDeploymentUI();
+        updateMenu();
+        switchPage('profile'); // retour à la page de connexion
+      }, 500);
+    });
+  }
+
+  // Navigation entre pages avec protection
   function switchPage(pageId) {
-    const pages = ['home', 'profile', 'pairing', 'deployment', 'credits'];
+    const isLoggedIn = !!getCurrentUser();
+    const protectedPages = ['home', 'pairing', 'deployment', 'credits', 'logout'];
+    // Si non connecté et tentative d'accès à une page protégée -> rediriger vers profile
+    if (!isLoggedIn && protectedPages.includes(pageId)) {
+      pageId = 'profile';
+    }
+    const pages = ['home', 'profile', 'pairing', 'deployment', 'credits', 'logout'];
     pages.forEach(p => {
       const el = document.getElementById(p + 'Page');
       if (el) el.classList.remove('active-page');
@@ -1046,6 +1170,7 @@
     if (pageId === 'profile') updateProfileUI();
     if (pageId === 'pairing') updatePairingUI();
     if (pageId === 'deployment') updateDeploymentUI();
+    if (pageId === 'logout') updateLogoutUI();
     closeMenu();
   }
 
@@ -1062,13 +1187,6 @@
   document.addEventListener('click', (e) => {
     if (!hamburger.contains(e.target) && !dropdown.contains(e.target)) closeMenu();
   });
-  document.querySelectorAll('.dropdown-menu a').forEach(link => {
-    link.addEventListener('click', (e) => {
-      const page = link.getAttribute('data-page');
-      if (page) switchPage(page);
-      closeMenu();
-    });
-  });
 
   // Thème clair/sombre
   const themeToggle = document.getElementById('themeToggle');
@@ -1078,7 +1196,7 @@
     localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
   });
 
-  // Effet d'illumination toggle (clic sur fond)
+  // Effet d'illumination toggle
   let glowEnabled = false;
   document.body.addEventListener('click', (e) => {
     if (!e.target.closest('.hamburger') && !e.target.closest('.dropdown-menu') && !e.target.closest('button') && !e.target.closest('input')) {
@@ -1091,7 +1209,8 @@
   });
 
   // Initialisation
-  switchPage('home');
+  updateMenu();
+  switchPage('profile');
 </script>
 </body>
-  </html>
+ </html>
