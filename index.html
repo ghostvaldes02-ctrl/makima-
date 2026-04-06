@@ -123,7 +123,7 @@
       background-clip: text;
       color: transparent;
     }
-    /* Hamburger */
+    /* Hamburger - masqué par défaut */
     .hamburger {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -138,6 +138,10 @@
       transition: var(--transition);
       position: relative;
       z-index: 1002;
+      display: none; /* caché tant que non connecté */
+    }
+    .hamburger.visible {
+      display: flex;
     }
     .hamburger:hover {
       background: var(--surface-hover);
@@ -872,7 +876,9 @@
   function updateMenu() {
     const isLoggedIn = !!getCurrentUser();
     const menuContainer = document.getElementById('dropdownMenu');
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
     if (isLoggedIn) {
+      hamburgerBtn.classList.add('visible');
       menuContainer.innerHTML = `
         <a data-page="home">Accueil</a>
         <a data-page="profile">Mon compte</a>
@@ -882,6 +888,7 @@
         <a data-page="logout">Déconnexion</a>
       `;
     } else {
+      hamburgerBtn.classList.remove('visible');
       menuContainer.innerHTML = `
         <a data-page="profile">Mon compte</a>
       `;
@@ -1043,7 +1050,7 @@
   function updatePairingUI() {
     const containerDiv = document.getElementById('pairingContent');
     const user = getCurrentUser();
-    if (!user) return; // ne devrait pas arriver car page protégée
+    if (!user) return;
     containerDiv.innerHTML = `
       <div class="input-group" id="pairingInputGroup">
         <label>Numéro WhatsApp (indicatif pays)</label>
@@ -1147,7 +1154,7 @@
         updatePairingUI();
         updateDeploymentUI();
         updateMenu();
-        switchPage('profile'); // retour à la page de connexion
+        switchPage('profile');
       }, 500);
     });
   }
@@ -1156,7 +1163,6 @@
   function switchPage(pageId) {
     const isLoggedIn = !!getCurrentUser();
     const protectedPages = ['home', 'pairing', 'deployment', 'credits', 'logout'];
-    // Si non connecté et tentative d'accès à une page protégée -> rediriger vers profile
     if (!isLoggedIn && protectedPages.includes(pageId)) {
       pageId = 'profile';
     }
