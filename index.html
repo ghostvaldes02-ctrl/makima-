@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>MAKIMA M-DX · Gestion WhatsApp</title>
   <meta name="description" content="Plateforme de gestion WhatsApp - Comptes, pairing, commandes, connexion sécurisée.">
+  
+  <!-- Balises Open Graph pour l'aperçu (thumbnail) -->
+  <meta property="og:title" content="MAKIMA M-DX - Gestion WhatsApp" />
+  <meta property="og:description" content="Plateforme de gestion WhatsApp - Comptes, pairing, commandes, connexion sécurisée." />
+  <meta property="og:image" content="https://i.ibb.co/xtb2sKmd/4cb50d3a6597.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:url" content="https://makima-eta.vercel.app/" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
@@ -187,7 +198,7 @@
         display: flex;
       }
     }
-    /* ========== CARTES PARENTES (pour profil, pairing, deployment, logout) ========== */
+    /* ========== CARTES PARENTES (profil, pairing, deployment, logout) ========== */
     .parent-card {
       background: var(--card-bg);
       backdrop-filter: blur(12px);
@@ -319,7 +330,6 @@
       border-radius: 20px;
       padding: 1rem;
       transition: transform 0.3s, box-shadow 0.3s, border-color 0.2s;
-      /* pas d'animation d'apparition */
     }
     .cmd-card:hover {
       transform: translateY(-4px);
@@ -397,23 +407,12 @@
       0% { opacity: 0; transform: translateY(30px); }
       100% { opacity: 1; transform: translateY(0); }
     }
-    .animate-left {
-      animation: fadeSlideLeft 0.6s ease-out forwards;
-    }
-    .animate-right {
-      animation: fadeSlideRight 0.6s ease-out forwards;
-    }
-    .animate-up {
-      animation: fadeSlideUp 0.6s ease-out forwards;
-    }
-    /* Classes pour les éléments à animer dans l'accueil */
     .home-header { animation: fadeSlideLeft 0.5s ease-out; }
     .home-stats { animation: fadeSlideRight 0.5s ease-out 0.1s both; }
     .home-features { animation: fadeSlideLeft 0.5s ease-out 0.2s both; }
     .home-cta { animation: fadeSlideUp 0.5s ease-out 0.3s both; }
     .home-links { animation: fadeSlideRight 0.5s ease-out 0.4s both; }
-    /* Les commandes (cmd-card) n'ont pas d'animation d'apparition globale */
-    /* Crédits (sans carte parente) */
+    /* Crédits */
     .credits-container {
       display: flex;
       flex-direction: column;
@@ -605,9 +604,8 @@
     </div>
   </div>
 
-  <!-- Page Accueil (sans carte parente, avec animations sur les cadres principaux) -->
+  <!-- Page Accueil (sans carte parente, avec animations) -->
   <div id="homePage" class="page">
-    <!-- Bloc en-tête (animé left) -->
     <div class="home-header">
       <div class="page-eyebrow"><span class="dot"></span> <span>Aperçu du projet Darkness</span></div>
       <h1 style="font-family: 'Space Grotesk', sans-serif; font-size: 1.6rem; margin-bottom: 0.5rem;">Créez un compte et déployez Makima M-DX</h1>
@@ -616,7 +614,6 @@
       <p style="text-align: center; font-size:0.85rem; margin: 1rem 0;">Solution WhatsApp nouvelle génération. Créez un compte, vérifiez votre email, connectez-vous et gérez votre appairage.</p>
     </div>
 
-    <!-- Statistiques (animé right) -->
     <div class="home-stats" id="statsCard">
       <div class="stats-strip">
         <div class="stat-item"><span class="stat-num" data-target="50">0</span><span class="stat-label">Commandes</span></div>
@@ -629,30 +626,17 @@
       </div>
     </div>
 
-    <!-- Aperçu des commandes (aucune animation sur ces cartes individuelles) -->
+    <!-- Aperçu des commandes (aucune animation sur ces cartes) -->
     <div style="margin: 1rem 0;">
       <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">Aperçu des commandes</div>
       <div class="commands-sigma-grid">
-        <div class="cmd-card">
-          <div class="cmd-header"><span class="cmd-icon">IA</span><span class="cmd-title">Intelligence Artificielle</span></div>
-          <div class="cmd-badges"><code>.ai</code> <code>.chatgpt</code> <code>.imagine</code> <code>.dalle</code></div>
-        </div>
-        <div class="cmd-card">
-          <div class="cmd-header"><span class="cmd-icon">DL</span><span class="cmd-title">Downloader</span></div>
-          <div class="cmd-badges"><code>.ytmp3</code> <code>.ytmp4</code> <code>.tiktok</code> <code>.instagram</code> <code>.facebook</code></div>
-        </div>
-        <div class="cmd-card">
-          <div class="cmd-header"><span class="cmd-icon">GP</span><span class="cmd-title">Groupe</span></div>
-          <div class="cmd-badges"><code>.tagall</code> <code>.kick</code> <code>.promote</code> <code>.mute</code> <code>.link</code></div>
-        </div>
-        <div class="cmd-card">
-          <div class="cmd-header"><span class="cmd-icon">TL</span><span class="cmd-title">Utilitaires</span></div>
-          <div class="cmd-badges"><code>.sticker</code> <code>.ping</code> <code>.menu</code> <code>.ssweb</code> <code>.translate</code></div>
-        </div>
+        <div class="cmd-card"><div class="cmd-header"><span class="cmd-icon">IA</span><span class="cmd-title">Intelligence Artificielle</span></div><div class="cmd-badges"><code>.ai</code> <code>.chatgpt</code> <code>.imagine</code> <code>.dalle</code></div></div>
+        <div class="cmd-card"><div class="cmd-header"><span class="cmd-icon">DL</span><span class="cmd-title">Downloader</span></div><div class="cmd-badges"><code>.ytmp3</code> <code>.ytmp4</code> <code>.tiktok</code> <code>.instagram</code> <code>.facebook</code></div></div>
+        <div class="cmd-card"><div class="cmd-header"><span class="cmd-icon">GP</span><span class="cmd-title">Groupe</span></div><div class="cmd-badges"><code>.tagall</code> <code>.kick</code> <code>.promote</code> <code>.mute</code> <code>.link</code></div></div>
+        <div class="cmd-card"><div class="cmd-header"><span class="cmd-icon">TL</span><span class="cmd-title">Utilitaires</span></div><div class="cmd-badges"><code>.sticker</code> <code>.ping</code> <code>.menu</code> <code>.ssweb</code> <code>.translate</code></div></div>
       </div>
     </div>
 
-    <!-- Fonctionnalités (animé left) -->
     <div class="home-features">
       <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">Fonctionnalités clés</div>
       <div class="features-grid">
@@ -662,7 +646,6 @@
       </div>
     </div>
 
-    <!-- CTA (animé up) -->
     <div class="home-cta">
       <div class="cta-banner">
         <div class="chip" style="margin-bottom: 0.5rem;">by The Darkness</div>
@@ -672,7 +655,6 @@
       </div>
     </div>
 
-    <!-- Liens sociaux (animé right) -->
     <div class="home-links">
       <div class="contact-buttons">
         <a href="https://wa.me/237671281938" class="contact-btn" target="_blank">Support</a>
@@ -682,7 +664,7 @@
     </div>
   </div>
 
-  <!-- Pages Pairing, Deployment, Credits, Logout (inchangées) -->
+  <!-- Pages Pairing, Deployment, Credits, Logout -->
   <div id="pairingPage" class="page">
     <div class="parent-card">
       <div class="page-eyebrow"><span class="dot"></span> <span>Lier votre WhatsApp</span></div>
@@ -742,15 +724,13 @@
   hamburger.addEventListener('click', (e) => { e.stopPropagation(); navLinks.classList.contains('open') ? closeMenu() : openMenu(); });
   document.addEventListener('click', (e) => { if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) closeMenu(); });
 
-  // ========== COMPTEURS STATISTIQUES AVEC RÉINITIALISATION ==========
+  // ========== COMPTEURS STATISTIQUES ==========
   let statsObserver = null;
   let statsAnimated = false;
 
   function resetStatsCounters() {
     const statNumbers = document.querySelectorAll('#statsCard .stat-num');
-    statNumbers.forEach(el => {
-      el.innerText = '0';
-    });
+    statNumbers.forEach(el => { el.innerText = '0'; });
     statsAnimated = false;
   }
 
@@ -809,7 +789,7 @@
   }
   addBounceEffect([document.getElementById('homeImage'), ...document.querySelectorAll('.bounce-on-click')]);
 
-  // ========== SYSTÈME DE COMPTES (identique) ==========
+  // ========== SYSTÈME DE COMPTES ==========
   const STORAGE_KEY = 'makima_users';
   const SESSION_KEY = 'makima_current_user';
   const VERIF_KEY = 'makima_verif';
@@ -1033,7 +1013,6 @@
     });
   }
 
-  // Navigation
   function switchPage(pageId) {
     const isLoggedIn = !!getCurrentUser();
     const protectedPages = ['home', 'pairing', 'deployment', 'logout'];
@@ -1071,15 +1050,11 @@
     localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
   });
 
-  // Bouton CTA
+  // CTA
   document.getElementById('ctaDeployBtn')?.addEventListener('click', () => {
     const user = getCurrentUser();
-    if (user) {
-      switchPage('pairing');
-    } else {
-      alert("Veuillez d'abord créer un compte ou vous connecter.");
-      switchPage('profile');
-    }
+    if (user) switchPage('pairing');
+    else { alert("Veuillez d'abord créer un compte ou vous connecter."); switchPage('profile'); }
   });
   document.getElementById('logoHome')?.addEventListener('click', () => switchPage('home'));
 
@@ -1096,4 +1071,4 @@
   switchPage('profile');
 </script>
 </body>
- </html>
+  </html>
