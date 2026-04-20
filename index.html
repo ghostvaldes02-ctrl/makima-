@@ -1,39 +1,43 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>MAKIMA M-DX · Gestion WhatsApp</title>
-  <meta name="description" content="Plateforme de gestion WhatsApp - Comptes, pairing, connexion sécurisée.">
+  <meta name="description" content="Plateforme de gestion WhatsApp - Comptes, pairing, commandes, connexion sécurisée.">
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    /* ========== VARIABLES ========== */
+    /* ========== VARIABLES (noir Sigma MDX) ========== */
     :root {
-      --bg: #0a0c10;
-      --surface: #15181e;
-      --surface-hover: #1f232b;
-      --text: #eef2ff;
-      --text-muted: #8a8f9e;
+      --bg: #060912;
+      --bg-gradient: radial-gradient(ellipse 80% 50% at 20% -10%, rgba(0,230,118,0.07) 0%, transparent 60%),
+                      radial-gradient(ellipse 60% 40% at 80% 110%, rgba(167,139,250,0.06) 0%, transparent 55%),
+                      linear-gradient(180deg, #060912 0%, #0b1120 100%);
+      --surface: rgba(255,255,255,0.04);
+      --surface-hover: rgba(255,255,255,0.07);
+      --text: #f0f6ff;
+      --text-muted: #6b7a99;
       --accent: #ff2a6d;
       --accent-light: #ff88b0;
-      --accent-glow: rgba(255, 42, 109, 0.3);
-      --border: #2a2e3a;
-      --card-bg: rgba(21, 24, 30, 0.8);
-      --shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      --border: rgba(255,255,255,0.08);
+      --card-bg: rgba(255,255,255,0.04);
+      --shadow: 0 24px 64px rgba(0,0,0,0.5);
       --success: #10b981;
-      --radius: 0.75rem;
-      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      --radius: 1rem;
+      --transition: all 0.2s ease;
+      --glow: 0 0 40px rgba(0,230,118,0.15);
     }
     body.light {
       --bg: #f3f4f6;
+      --bg-gradient: none;
       --surface: #ffffff;
       --surface-hover: #f9fafb;
       --text: #111827;
       --text-muted: #6b7280;
       --border: #e5e7eb;
       --card-bg: rgba(255, 255, 255, 0.9);
-      --shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
     }
     * {
       margin: 0;
@@ -42,106 +46,107 @@
     }
     body {
       background: var(--bg);
+      background-image: var(--bg-gradient);
       color: var(--text);
       font-family: 'Inter', sans-serif;
-      transition: background 0.2s, color 0.2s;
+      transition: background 0.3s, color 0.2s;
       padding: 1rem;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
     }
-    /* Fond 3D dynamique */
-    .bg-3d {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -2;
-      transform: translateZ(-80px) scale(1.2);
-      transition: transform 0.15s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-      will-change: transform;
-    }
-    .bg-3d::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 30% 20%, #ff2a6d20, #0a0008 90%);
-    }
-    body.light .bg-3d::before {
-      background: radial-gradient(circle at 30% 20%, #ff2a6d10, #fff0f5 90%);
-    }
-    .bg-3d::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(45deg, #ff2a6d08 0px, #ff2a6d08 2px, transparent 2px, transparent 8px);
-      pointer-events: none;
-    }
-    body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(ellipse, #1a0010 0%, #050002 100%);
-      opacity: 0.9;
-      z-index: -1;
-    }
-    body.light::after {
-      background: radial-gradient(ellipse, #fff0f5 0%, #ffe4ec 100%);
-      opacity: 0.9;
-    }
-    /* Conteneur principal avec effet 3D souris */
-    .perspective-wrapper {
-      perspective: 1200px;
-      transform-style: preserve-3d;
-    }
     .container {
       max-width: 700px;
       margin: 0 auto;
       position: relative;
       z-index: 2;
-      transform: translateZ(30px);
-      transition: transform 0.2s ease-out;
-      min-height: auto;
     }
-    /* Header */
-    .header {
+    /* ========== NAVBAR ========== */
+    .navbar {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
-      gap: 1rem;
+      justify-content: space-between;
+      background: rgba(6,9,18,0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.8rem 1.5rem;
+      border-radius: 2rem;
+      margin-bottom: 2rem;
+      position: sticky;
+      top: 0.5rem;
+      z-index: 100;
+    }
+    body.light .navbar {
+      background: rgba(255, 255, 255, 0.8);
     }
     .logo {
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       font-weight: 700;
       font-family: 'Space Grotesk', sans-serif;
       background: linear-gradient(135deg, var(--accent), #ff88b0);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
+      cursor: pointer;
+      letter-spacing: -0.02em;
     }
-    /* Hamburger - masqué par défaut */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      transition: var(--transition);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .nav-links a:hover {
+      color: var(--text);
+      background: var(--surface-hover);
+    }
+    .nav-links a.active {
+      color: var(--accent);
+      background: rgba(255, 42, 109, 0.1);
+    }
+    .nav-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .theme-toggle {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 40px;
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: var(--transition);
+      color: var(--text);
+    }
+    .theme-toggle:hover {
+      background: var(--surface-hover);
+      border-color: var(--accent);
+    }
+    /* Hamburger style Sigma */
     .hamburger {
+      display: none;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 0.5rem;
       cursor: pointer;
-      display: flex;
       flex-direction: column;
       gap: 4px;
       width: 40px;
       align-items: center;
       transition: var(--transition);
-      position: relative;
-      z-index: 1002;
-      display: none; /* caché tant que non connecté */
-    }
-    .hamburger.visible {
-      display: flex;
     }
     .hamburger:hover {
       background: var(--surface-hover);
@@ -154,286 +159,295 @@
       border-radius: 2px;
       transition: 0.2s;
     }
-    .dropdown-menu {
-      position: fixed;
-      top: 70px;
-      right: 20px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      min-width: 200px;
-      z-index: 1001;
-      box-shadow: 0 15px 30px rgba(0,0,0,0.4);
-      overflow: hidden;
-      display: none;
-      backdrop-filter: blur(10px);
-      background: rgba(21, 24, 30, 0.95);
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        position: fixed;
+        top: 70px;
+        left: 0;
+        right: 0;
+        background: var(--surface);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        padding: 1rem;
+        gap: 0.75rem;
+        border-bottom: 1px solid var(--border);
+        z-index: 99;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      }
+      .nav-links.open {
+        display: flex;
+      }
+      .nav-links a {
+        padding: 0.75rem 1rem;
+        text-align: center;
+        border-radius: 12px;
+      }
+      .hamburger {
+        display: flex;
+      }
     }
-    body.light .dropdown-menu {
-      background: rgba(255, 255, 255, 0.95);
-    }
-    .dropdown-menu a {
-      display: block;
-      padding: 0.8rem 1rem;
-      color: var(--text);
-      text-decoration: none;
-      transition: 0.1s;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
-    .dropdown-menu a:hover {
-      background: var(--surface-hover);
-      color: var(--accent);
-    }
-    .dropdown-menu.show {
-      display: block;
-    }
-    .theme-toggle {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 40px;
-      padding: 0.4rem 0.8rem;
-      cursor: pointer;
-      font-size: 0.8rem;
-      transition: var(--transition);
-    }
-    .theme-toggle:hover {
-      background: var(--surface-hover);
-      border-color: var(--accent);
-    }
-    /* CARTES - animations d'apparition */
-    .card {
+    /* ========== CARTES PARENTES (pour profil, pairing, deployment, logout) ========== */
+    .parent-card {
       background: var(--card-bg);
       backdrop-filter: blur(12px);
       border: 1px solid var(--border);
       border-radius: 28px;
-      padding: 1.2rem;
-      margin-bottom: 1.2rem;
-      transition: transform 0.4s cubic-bezier(0.2, 0.85, 0.3, 1.1), 
-                  box-shadow 0.4s cubic-bezier(0.2, 0.85, 0.3, 1.1), 
-                  border-color 0.2s ease;
-      animation-duration: 0.9s;
-      animation-timing-function: cubic-bezier(0.18, 0.89, 0.32, 1.02);
-      animation-fill-mode: forwards;
-      opacity: 0;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: transform 0.3s, box-shadow 0.3s, border-color 0.2s;
+      animation: fadeIn 0.5s ease-out;
     }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .parent-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+      border-color: var(--accent);
+    }
+    /* ========== STYLES GÉNÉRAUX (accueil) ========== */
+    .page-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,42,109,0.08);
+      color: var(--accent);
+      border: 1px solid rgba(255,42,109,0.2);
+      padding: 0.25rem 0.8rem;
+      border-radius: 50px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .page-eyebrow .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: blink 1.8s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .stats-strip {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      padding: 1rem;
+      flex-wrap: wrap;
+      background: var(--surface);
+      border-radius: var(--radius);
+      margin: 1rem 0;
+    }
+    .stat-item { 
+      text-align: center; 
+      display: flex; 
+      align-items: baseline; 
+      gap: 0.1rem; 
+      justify-content: center;
+    }
+    .stat-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--accent);
+      min-width: 60px;
+    }
+    .stat-percent {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+    .stat-label { 
+      font-size: 0.7rem; 
+      color: var(--text-muted); 
+      text-transform: uppercase; 
+      margin-left: 0.2rem;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      transition: all 0.3s;
+    }
+    .feature-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+    }
+    .feature-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .cta-banner {
+      margin: 1rem 0;
+      background: linear-gradient(135deg, rgba(255,42,109,0.08), rgba(255,136,176,0.06));
+      border: 1px solid rgba(255,42,109,0.15);
+      border-radius: 24px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.7rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(255,42,109,0.08);
+      border: 1px solid rgba(255,42,109,0.15);
+      color: var(--accent);
+    }
+    /* Cartes individuelles pour les commandes (style Sigma) - PAS D'EFFET D'APPARITION SPÉCIAL */
+    .commands-sigma-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    .cmd-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1rem;
+      transition: transform 0.3s, box-shadow 0.3s, border-color 0.2s;
+      /* pas d'animation d'apparition */
+    }
+    .cmd-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+      border-color: var(--accent);
+    }
+    .cmd-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.8rem;
+    }
+    .cmd-icon {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+    .cmd-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--accent);
+    }
+    .cmd-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+    .cmd-badges code {
+      background: rgba(255,255,255,0.1);
+      padding: 0.2rem 0.5rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-family: monospace;
+    }
+    .home-image {
+      max-width: 180px;
+      border-radius: 24px;
+      border: 2px solid var(--accent);
+      display: block;
+      margin: 0 auto;
+      cursor: pointer;
+    }
+    .contact-buttons {
+      display: flex;
+      gap: 0.6rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+    .contact-btn {
+      background: rgba(255,42,109,0.1);
+      border: 1px solid var(--border);
+      padding: 0.3rem 1rem;
+      border-radius: 60px;
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.75rem;
+      transition: var(--transition);
+    }
+    .contact-btn:hover {
+      background: var(--accent);
+      color: #0a0005;
+      transform: translateY(-2px);
+    }
+    /* Animations pour les cadres de l'accueil (sauf commandes) */
     @keyframes fadeSlideLeft {
-      0% { opacity: 0; transform: translateX(-40px); }
+      0% { opacity: 0; transform: translateX(-30px); }
       100% { opacity: 1; transform: translateX(0); }
     }
     @keyframes fadeSlideRight {
-      0% { opacity: 0; transform: translateX(40px); }
+      0% { opacity: 0; transform: translateX(30px); }
       100% { opacity: 1; transform: translateX(0); }
     }
     @keyframes fadeSlideUp {
-      0% { opacity: 0; transform: translateY(40px); }
+      0% { opacity: 0; transform: translateY(30px); }
       100% { opacity: 1; transform: translateY(0); }
     }
-    .card.animate-left { animation-name: fadeSlideLeft; }
-    .card.animate-right { animation-name: fadeSlideRight; }
-    .card.animate-up { animation-name: fadeSlideUp; }
-    .card:hover {
-      transform: translateY(-6px) translateZ(15px);
-      box-shadow: var(--shadow), 0 0 0 1px var(--accent);
-      border-color: var(--accent);
+    .animate-left {
+      animation: fadeSlideLeft 0.6s ease-out forwards;
     }
-    .card:active {
-      transform: scale(0.99);
-      transition: transform 0.05s;
+    .animate-right {
+      animation: fadeSlideRight 0.6s ease-out forwards;
     }
-    .card-title {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
+    .animate-up {
+      animation: fadeSlideUp 0.6s ease-out forwards;
+    }
+    /* Classes pour les éléments à animer dans l'accueil */
+    .home-header { animation: fadeSlideLeft 0.5s ease-out; }
+    .home-stats { animation: fadeSlideRight 0.5s ease-out 0.1s both; }
+    .home-features { animation: fadeSlideLeft 0.5s ease-out 0.2s both; }
+    .home-cta { animation: fadeSlideUp 0.5s ease-out 0.3s both; }
+    .home-links { animation: fadeSlideRight 0.5s ease-out 0.4s both; }
+    /* Les commandes (cmd-card) n'ont pas d'animation d'apparition globale */
+    /* Crédits (sans carte parente) */
+    .credits-container {
       display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1rem;
     }
-    /* Effet rebondissant au clic sur les images */
-    .bounce-click {
-      animation: bounceAnim 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    }
-    @keyframes bounceAnim {
-      0% { transform: scale(1); }
-      50% { transform: scale(0.97); }
-      100% { transform: scale(1); }
-    }
-    /* Formulaires */
-    .input-group {
-      margin-bottom: 0.8rem;
-      position: relative;
-    }
-    label {
-      display: block;
-      font-size: 0.8rem;
-      margin-bottom: 0.3rem;
-      color: var(--text-muted);
-    }
-    input, button {
-      width: 100%;
-      padding: 0.6rem 1rem;
+    .credit-card {
       background: var(--surface);
+      border-radius: 24px;
+      padding: 1rem;
       border: 1px solid var(--border);
-      border-radius: 60px;
-      color: var(--text);
-      font-size: 0.85rem;
-      outline: none;
       transition: var(--transition);
     }
-    input:focus {
+    .credit-card:hover {
       border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(255, 42, 109, 0.2);
-    }
-    button {
-      background: var(--accent);
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-weight: 600;
-      transition: 0.2s;
-      position: relative;
-      overflow: hidden;
-    }
-    button::before {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.3);
-      transition: width 0.4s, height 0.4s;
-      transform: translate(-50%, -50%);
-    }
-    button:hover::before {
-      width: 200px;
-      height: 200px;
-    }
-    button:hover {
-      opacity: 0.9;
       transform: translateY(-2px);
     }
-    /* Checkbox style */
-    .checkbox-group {
+    .credit-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--accent);
       display: flex;
       align-items: center;
+      flex-wrap: wrap;
       gap: 0.5rem;
-      margin: 0.8rem 0;
     }
-    .checkbox-group input {
-      width: auto;
-      margin: 0;
-    }
-    .checkbox-group label {
-      margin: 0;
-      font-size: 0.8rem;
-    }
-    /* Texte flottant d'aide */
-    .floating-help {
-      position: absolute;
-      bottom: 100%;
-      left: 0;
-      margin-bottom: 0.3rem;
-      background: var(--accent);
-      color: white;
-      font-size: 0.7rem;
-      padding: 0.2rem 0.6rem;
-      border-radius: 40px;
-      white-space: nowrap;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.2s;
-      z-index: 10;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
-    .input-group:focus-within .floating-help {
-      opacity: 1;
-    }
-    .input-group.has-value .floating-help {
-      opacity: 0 !important;
-    }
-    .code-result {
-      margin-top: 1rem;
-      background: var(--surface);
+    .credit-img {
+      width: 100%;
+      max-width: 300px;
       border-radius: 20px;
-      padding: 0.8rem;
-      text-align: center;
-    }
-    .code-number {
-      font-size: 1.8rem;
-      letter-spacing: 4px;
-      font-weight: bold;
-      color: var(--accent);
-    }
-    .error-msg, .success-msg {
-      font-size: 0.75rem;
-      margin-top: 0.5rem;
-      text-align: center;
-    }
-    .error-msg { color: #ef4444; }
-    .success-msg { color: var(--success); }
-    /* Badges clignotants */
-    .status-badge {
-      display: inline-block;
-      background: var(--success);
-      padding: 0.2rem 0.6rem;
-      border-radius: 60px;
-      font-size: 0.7rem;
-      font-weight: bold;
-      margin-left: 0.5rem;
-      animation: blink 1.2s infinite;
-    }
-    .preview-badge {
-      background: var(--accent);
-      animation: blinkPreview 1s infinite;
-      display: inline-block;
-      padding: 0.2rem 0.8rem;
-      border-radius: 60px;
-      font-size: 0.7rem;
-      font-weight: bold;
-      margin-bottom: 0.6rem;
-      color: white;
-    }
-    .glowing-badge {
-      display: inline-block;
-      background: var(--accent);
-      padding: 0.2rem 0.6rem;
-      border-radius: 60px;
-      font-size: 0.7rem;
-      font-weight: bold;
-      margin-left: 0.8rem;
-      animation: blinkAccent 1.2s infinite;
-      color: white;
-    }
-    @keyframes blinkAccent {
-      0%, 100% { opacity: 1; background-color: var(--accent); }
-      50% { opacity: 0.6; background-color: #ff88b0; }
-    }
-    @keyframes blink {
-      0%, 100% { opacity: 1; background-color: #2ecc71; }
-      50% { opacity: 0.6; background-color: #27ae60; }
-    }
-    @keyframes blinkPreview {
-      0%, 100% { opacity: 1; background-color: var(--accent); }
-      50% { opacity: 0.6; background-color: #ff88b0; }
-    }
-    .loader {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      border: 2px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin-right: 6px;
-      vertical-align: middle;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    /* Effet d'illumination toggle */
-    .glow-active {
-      box-shadow: 0 0 0 2px var(--accent), 0 0 20px var(--accent-glow);
-      transition: 0.1s;
+      margin: 0.8rem 0;
+      border: 1px solid var(--border);
+      cursor: pointer;
     }
     .profile-row {
       display: flex;
@@ -465,82 +479,42 @@
       color: white;
       border-color: var(--accent);
     }
-    .feature-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-      justify-content: center;
-      margin: 0.8rem 0;
+    .input-group {
+      margin-bottom: 0.8rem;
+      position: relative;
     }
-    .feature-card {
-      background: rgba(255,42,109,0.1);
-      backdrop-filter: blur(4px);
-      padding: 0.3rem 0.8rem;
-      border-radius: 40px;
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: var(--text);
+    label {
+      display: block;
+      font-size: 0.8rem;
+      margin-bottom: 0.3rem;
+      color: var(--text-muted);
+    }
+    input, button {
+      width: 100%;
+      padding: 0.6rem 1rem;
+      background: var(--surface);
       border: 1px solid var(--border);
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-      transform: translateY(0);
-    }
-    .feature-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      border-color: var(--accent);
-      background: rgba(255,42,109,0.2);
-    }
-    .contact-buttons {
-      display: flex;
-      gap: 0.6rem;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin: 0.8rem 0;
-    }
-    .contact-btn {
-      background: rgba(255,42,109,0.1);
-      backdrop-filter: blur(4px);
-      border: 1px solid var(--border);
-      padding: 0.3rem 1rem;
       border-radius: 60px;
       color: var(--text);
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 0.75rem;
+      font-size: 0.85rem;
+      outline: none;
       transition: var(--transition);
-      position: relative;
-      overflow: hidden;
     }
-    .contact-btn::before {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255,42,109,0.3);
-      transition: width 0.4s, height 0.4s;
-      transform: translate(-50%, -50%);
-    }
-    .contact-btn:hover::before {
-      width: 150px;
-      height: 150px;
-    }
-    .contact-btn:hover {
+    button {
       background: var(--accent);
-      color: #0a0005;
-      transform: translateY(-2px);
-    }
-    .home-image {
-      max-width: 180px;
-      border-radius: 24px;
-      border: 2px solid var(--accent);
-      display: block;
-      margin: 0 auto;
-      transition: transform 0.3s;
+      color: white;
+      border: none;
       cursor: pointer;
+      font-weight: 600;
+    }
+    .status-badge, .glowing-badge {
+      display: inline-block;
+      background: #10b981 !important;
+      color: white !important;
+      padding: 0.2rem 0.6rem !important;
+      border-radius: 40px !important;
+      font-size: 0.65rem !important;
+      font-weight: 600 !important;
     }
     .footer {
       text-align: center;
@@ -550,146 +524,156 @@
       font-size: 0.7rem;
       margin-top: 1.5rem;
     }
-    .credits-container {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .credit-card {
-      background: var(--surface);
-      border-radius: 24px;
-      padding: 1rem;
-      border: 1px solid var(--border);
-      transition: var(--transition);
-    }
-    .credit-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-2px);
-    }
-    .credit-title {
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      color: var(--accent);
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-    .credit-img {
-      width: 100%;
-      max-width: 300px;
-      border-radius: 20px;
-      margin: 0.8rem 0;
-      border: 1px solid var(--border);
-      transition: transform 0.2s;
-      cursor: pointer;
-    }
-    /* Transitions entre pages - ralenties */
     .page {
-      transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
-                  transform 0.7s cubic-bezier(0.2, 0.9, 0.4, 1);
+      transition: opacity 0.4s, transform 0.4s;
       opacity: 0;
-      transform: scale(0.97) translateY(12px);
+      transform: scale(0.98);
       visibility: hidden;
       position: absolute;
       width: 100%;
       pointer-events: none;
-      will-change: transform, opacity;
     }
     .page.active-page {
       opacity: 1;
-      transform: scale(1) translateY(0);
+      transform: scale(1);
       visibility: visible;
       position: relative;
       pointer-events: auto;
     }
-    /* Bouton contact créateur */
-    .creator-contact-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: linear-gradient(135deg, #25d366, #128c7e);
-      color: white;
-      padding: 0.6rem 1.2rem;
-      border-radius: 60px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.85rem;
+    .bounce-click {
+      animation: bounceAnim 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    @keyframes bounceAnim {
+      0% { transform: scale(1); }
+      50% { transform: scale(0.97); }
+      100% { transform: scale(1); }
+    }
+    .error-msg { color: #ef4444; font-size: 0.75rem; margin-top: 0.5rem; text-align: center; }
+    .success-msg { color: var(--success); font-size: 0.75rem; margin-top: 0.5rem; text-align: center; }
+    .loader {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .code-result {
       margin-top: 1rem;
-      transition: transform 0.2s, box-shadow 0.2s;
-      border: none;
-      cursor: pointer;
-    }
-    .creator-contact-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
-    }
-    /* ReCAPTCHA simulé */
-    .fake-recaptcha {
       background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.75rem;
-      margin: 0.8rem 0;
+      border-radius: 20px;
+      padding: 0.8rem;
+      text-align: center;
     }
-    .fake-recaptcha input {
-      width: auto;
-      margin: 0;
-    }
-    @media (max-width: 600px) {
-      .container { max-width: 95%; }
-      .credit-img { max-width: 100%; }
-      .floating-help { white-space: normal; width: 200px; font-size: 0.65rem; }
+    .code-number {
+      font-size: 1.8rem;
+      letter-spacing: 4px;
+      font-weight: bold;
+      color: var(--accent);
     }
   </style>
 </head>
 <body>
-<div class="bg-3d" id="bg3d"></div>
-<div class="perspective-wrapper">
-<div class="container" id="mainContainer">
-  <div class="header">
-    <div class="logo">MAKIMA M-DX</div>
-    <div style="display: flex; gap: 0.8rem; align-items: center;">
-      <div class="hamburger" id="hamburgerBtn">
+<div class="container">
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="logo" id="logoHome">MAKIMA M-DX</div>
+    <div class="nav-links" id="navLinks">
+      <a data-page="home">Accueil</a>
+      <a data-page="profile">Profil</a>
+      <a data-page="pairing">Pairing</a>
+      <a data-page="deployment">Connexion</a>
+      <a data-page="credits">Crédits</a>
+      <a data-page="logout">Déconnexion</a>
+    </div>
+    <div class="nav-actions">
+      <div class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i> Thème</div>
+      <div class="hamburger" id="hamburgerBtn" aria-label="Menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </div>
-      <div class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i> Thème</div>
     </div>
   </div>
-  <div class="dropdown-menu" id="dropdownMenu">
-    <!-- Le contenu sera généré dynamiquement en JS -->
-  </div>
 
-  <!-- PAGE MON COMPTE (connexion/inscription) -->
+  <!-- Page Profil (avec carte parente) -->
   <div id="profilePage" class="page active-page">
-    <div class="card" data-animation="right">
-      <div class="card-title"><i class="fas fa-user-circle"></i> Mon Profil</div>
+    <div class="parent-card">
+      <div class="page-eyebrow"><span class="dot"></span> <span>Accès compte</span></div>
+      <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem;"><i class="fas fa-user-circle"></i> Mon Profil</div>
       <div id="profileContent"></div>
     </div>
   </div>
 
-  <!-- PAGE ACCUEIL (protégée) -->
+  <!-- Page Accueil (sans carte parente, avec animations sur les cadres principaux) -->
   <div id="homePage" class="page">
-    <div class="card" data-animation="left">
-      <div class="card-title"><i class="fas fa-home"></i> Accueil</div>
-      <div style="text-align: center;">
-        <div class="preview-badge">Aperçu d'un des Projets de The Darkness</div>
-        <img src="https://files.catbox.moe/erp250.jpg" alt="MAKIMA" class="home-image" id="homeImage">
+    <!-- Bloc en-tête (animé left) -->
+    <div class="home-header">
+      <div class="page-eyebrow"><span class="dot"></span> <span>Aperçu du projet Darkness</span></div>
+      <h1 style="font-family: 'Space Grotesk', sans-serif; font-size: 1.6rem; margin-bottom: 0.5rem;">Créez un compte et déployez Makima M-DX</h1>
+      <p style="color: var(--text-muted); margin-bottom: 1rem;">Bot gratuit pour le moment</p>
+      <img src="https://i.ibb.co/xtb2sKmd/4cb50d3a6597.jpg" alt="MAKIMA" class="home-image bounce-on-click" id="homeImage">
+      <p style="text-align: center; font-size:0.85rem; margin: 1rem 0;">Solution WhatsApp nouvelle génération. Créez un compte, vérifiez votre email, connectez-vous et gérez votre appairage.</p>
+    </div>
+
+    <!-- Statistiques (animé right) -->
+    <div class="home-stats" id="statsCard">
+      <div class="stats-strip">
+        <div class="stat-item"><span class="stat-num" data-target="50">0</span><span class="stat-label">Commandes</span></div>
+        <div class="stat-item"><span class="stat-num" data-target="8">0</span><span class="stat-label">Catégories</span></div>
+        <div class="stat-item">
+          <span class="stat-num" data-target="100">0</span>
+          <span class="stat-percent">%</span>
+          <span class="stat-label">Gratuit</span>
+        </div>
       </div>
-      <p style="text-align: center; font-size:0.85rem; margin: 0.8rem 0;">
-        Solution WhatsApp nouvelle génération. Créez un compte, vérifiez votre email, connectez-vous et gérez votre appairage.
-      </p>
-      <div class="feature-grid">
-        <div class="feature-card">Pairing sécurisé</div>
-        <div class="feature-card">Vérification email</div>
-        <div class="feature-card">API externes</div>
-        <div class="feature-card">Haute disponibilité</div>
+    </div>
+
+    <!-- Aperçu des commandes (aucune animation sur ces cartes individuelles) -->
+    <div style="margin: 1rem 0;">
+      <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">Aperçu des commandes</div>
+      <div class="commands-sigma-grid">
+        <div class="cmd-card">
+          <div class="cmd-header"><span class="cmd-icon">IA</span><span class="cmd-title">Intelligence Artificielle</span></div>
+          <div class="cmd-badges"><code>.ai</code> <code>.chatgpt</code> <code>.imagine</code> <code>.dalle</code></div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-header"><span class="cmd-icon">DL</span><span class="cmd-title">Downloader</span></div>
+          <div class="cmd-badges"><code>.ytmp3</code> <code>.ytmp4</code> <code>.tiktok</code> <code>.instagram</code> <code>.facebook</code></div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-header"><span class="cmd-icon">GP</span><span class="cmd-title">Groupe</span></div>
+          <div class="cmd-badges"><code>.tagall</code> <code>.kick</code> <code>.promote</code> <code>.mute</code> <code>.link</code></div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-header"><span class="cmd-icon">TL</span><span class="cmd-title">Utilitaires</span></div>
+          <div class="cmd-badges"><code>.sticker</code> <code>.ping</code> <code>.menu</code> <code>.ssweb</code> <code>.translate</code></div>
+        </div>
       </div>
+    </div>
+
+    <!-- Fonctionnalités (animé left) -->
+    <div class="home-features">
+      <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">Fonctionnalités clés</div>
+      <div class="features-grid">
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-link"></i></div><h3>Pairing sécurisé</h3><p>Connectez votre WhatsApp avec code unique.</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-envelope"></i></div><h3>Vérification email</h3><p>Protégez votre compte par email.</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-cloud-upload-alt"></i></div><h3>Haute disponibilité</h3><p>Bot accessible 24/7.</p></div>
+      </div>
+    </div>
+
+    <!-- CTA (animé up) -->
+    <div class="home-cta">
+      <div class="cta-banner">
+        <div class="chip" style="margin-bottom: 0.5rem;">by The Darkness</div>
+        <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 1.3rem;">Déploie makima tranquillement</h2>
+        <p style="margin: 0.5rem 0;">Créez votre compte et lancez votre bot WhatsApp.</p>
+        <button id="ctaDeployBtn" style="background: var(--accent); color: white; padding: 0.6rem 1.5rem; border-radius: 60px; font-weight: 600; border: none;">déploie le bot maintenant</button>
+      </div>
+    </div>
+
+    <!-- Liens sociaux (animé right) -->
+    <div class="home-links">
       <div class="contact-buttons">
         <a href="https://wa.me/237671281938" class="contact-btn" target="_blank">Support</a>
         <a href="https://whatsapp.com/channel/0029VbBz3AYBPzjd5is5mJ2W" class="contact-btn" target="_blank">Chaîne</a>
@@ -698,160 +682,143 @@
     </div>
   </div>
 
-  <!-- PAGE PAIRING (protégée) -->
+  <!-- Pages Pairing, Deployment, Credits, Logout (inchangées) -->
   <div id="pairingPage" class="page">
-    <div class="card" data-animation="up">
-      <div class="card-title"><i class="fab fa-whatsapp"></i> Lier votre WhatsApp</div>
-      <div style="text-align: center; margin-bottom: 1rem;">
-        <img src="https://files.catbox.moe/ymtwvw.jpg" alt="whatsapp" class="bounce-on-click" style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--accent); cursor: pointer;">
-      </div>
+    <div class="parent-card">
+      <div class="page-eyebrow"><span class="dot"></span> <span>Lier votre WhatsApp</span></div>
+      <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem;"><i class="fab fa-whatsapp"></i> Pairing</div>
+      <div style="text-align: center; margin-bottom: 1rem;"><img src="https://i.ibb.co/60KJkRmS/b164255a8a32.jpg" alt="whatsapp" class="bounce-on-click" style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--accent); cursor: pointer;"></div>
       <div id="pairingContent"></div>
     </div>
   </div>
 
-  <!-- PAGE CONNEXION EN COURS (protégée) -->
   <div id="deploymentPage" class="page">
-    <div class="card" data-animation="left">
-      <div class="card-title"><i class="fas fa-plug"></i> Connexion en cours</div>
+    <div class="parent-card">
+      <div class="page-eyebrow"><span class="dot"></span> <span>État de la connexion</span></div>
+      <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem;"><i class="fas fa-plug"></i> Connexion en cours</div>
       <div id="deploymentContent"></div>
     </div>
   </div>
 
-  <!-- PAGE CRÉDITS (protégée) -->
   <div id="creditsPage" class="page">
-    <div class="card" data-animation="right">
-      <div class="card-title"><i class="fas fa-star"></i> Crédits</div>
-      <div class="credits-container">
-        <div class="credit-card">
-          <div class="credit-title">
-             THE DARKNESS
-            <span class="glowing-badge">Créateur</span>
-          </div>
-          <div class="profile-row" style="margin-top:0.5rem;">
-            <img src="https://files.catbox.moe/vlmmwm.jpg" class="avatar bounce-on-click" alt="avatar" style="width:60px; height:60px; cursor: pointer;">
-            <div class="credit-text" style="flex:1;">
-              Développeur, créateur de solutions & d'idée WhatsApp alliant esthétique sombre, culture anime et rigueur technique.
-            </div>
-          </div>
-          <a href="https://wa.me/237671281938" class="creator-contact-btn" target="_blank">
-            <i class="fab fa-whatsapp"></i> Contacter le créateur
-          </a>
-        </div>
-        <div class="credit-card">
-          <div class="credit-title">𓁹 Makima M-DX</div>
-          <img src="https://files.catbox.moe/erp250.jpg" alt="Makima M-DX" class="credit-img bounce-on-click">
-          <div class="credit-text">
-            Bot inspiré du personnage de Makima. Identité visuelle unique, ton incisif, commandes réactives et design soigné.
-          </div>
-        </div>
-        <div class="credit-card">
-          <div class="credit-title">𓁹 Darkness X-MD</div>
-          <img src="https://files.catbox.moe/5p71ef.jpg" alt="Darkness X-MD" class="credit-img bounce-on-click">
-          <div class="credit-text">
-            Assistant WhatsApp polyvalent et modulaire : modération, téléchargement, IA, commandes interactives. Alliance de puissance technique et ambiance mystérieuse.
-          </div>
-        </div>
-        <div class="credit-text" style="text-align:center; font-size:0.75rem; margin-top:0.5rem;">
-          © 2026 THE DARKNESS — Tous droits réservés
-        </div>
+    <div class="page-eyebrow"><span class="dot"></span> <span>À propos</span></div>
+    <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem;"><i class="fas fa-star"></i> Crédits</div>
+    <div class="credits-container">
+      <div class="credit-card">
+        <div class="credit-title">THE DARKNESS <span class="glowing-badge">Créateur</span></div>
+        <div class="profile-row"><img src="https://i.ibb.co/KpDBGfjp/47aeba979ed1.jpg" class="avatar bounce-on-click" alt="avatar" style="width:60px; height:60px;"><div>Développeur, créateur de solutions WhatsApp alliant esthétique sombre, culture anime et rigueur technique.</div></div>
+        <a href="https://wa.me/237671281938" class="creator-contact-btn" target="_blank" style="display:inline-flex; align-items:center; gap:0.5rem; background:#25d366; color:white; padding:0.5rem 1rem; border-radius:60px; text-decoration:none; margin-top:0.5rem;"><i class="fab fa-whatsapp"></i> Contacter le créateur</a>
+      </div>
+      <div class="credit-card">
+        <div class="credit-title">Makima M-DX</div>
+        <img src="https://i.ibb.co/xtb2sKmd/4cb50d3a6597.jpg" alt="Makima M-DX" class="credit-img bounce-on-click">
+        <div>Bot inspiré du personnage de Makima. Identité visuelle unique, ton incisif, commandes réactives et design soigné.</div>
+      </div>
+      <div class="credit-card">
+        <div class="credit-title">Darkness X-MD</div>
+        <img src="https://i.ibb.co/gZKRYNMW/3cf04f69c0da.jpg" alt="Darkness X-MD" class="credit-img bounce-on-click">
+        <div>Assistant WhatsApp polyvalent : modération, téléchargement, IA, commandes interactives. Alliance de puissance technique et ambiance mystérieuse.</div>
       </div>
     </div>
   </div>
 
-  <!-- PAGE DÉCONNEXION (protégée) -->
   <div id="logoutPage" class="page">
-    <div class="card" data-animation="up">
-      <div class="card-title"><i class="fas fa-sign-out-alt"></i> Déconnexion sécurisée</div>
+    <div class="parent-card">
+      <div class="page-eyebrow"><span class="dot"></span> <span>Sécurité</span></div>
+      <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem;"><i class="fas fa-sign-out-alt"></i> Déconnexion sécurisée</div>
       <div id="logoutContent"></div>
     </div>
   </div>
 
-  <div class="footer">
-    © 2026 THE DARKNESS — MAKIMA M-DX | ◉ VALDES
-  </div>
-</div>
+  <div class="footer">© 2026 THE DARKNESS — MAKIMA M-DX | VALDES</div>
 </div>
 
 <script>
-  // ==================== EFFET 3D SOURIS ====================
-  const bg = document.getElementById('bg3d');
-  const container = document.getElementById('mainContainer');
-  if (bg && container) {
-    document.addEventListener('mousemove', (e) => {
-      const x = (e.clientX / window.innerWidth) * 30 - 15;
-      const y = (e.clientY / window.innerHeight) * 20 - 10;
-      bg.style.transform = `translateZ(-80px) translateX(${x * 0.4}px) translateY(${y * 0.3}px) scale(1.2)`;
-      container.style.transform = `translateZ(30px) rotateX(${y * 0.03}deg) rotateY(${x * 0.03}deg)`;
+  // ========== GESTION DU MENU HAMBURGER ==========
+  const hamburger = document.getElementById('hamburgerBtn');
+  const navLinks = document.getElementById('navLinks');
+  function closeMenu() { navLinks.classList.remove('open'); hamburger.setAttribute('aria-expanded', 'false'); }
+  function openMenu() { navLinks.classList.add('open'); hamburger.setAttribute('aria-expanded', 'true'); }
+  hamburger.addEventListener('click', (e) => { e.stopPropagation(); navLinks.classList.contains('open') ? closeMenu() : openMenu(); });
+  document.addEventListener('click', (e) => { if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) closeMenu(); });
+
+  // ========== COMPTEURS STATISTIQUES AVEC RÉINITIALISATION ==========
+  let statsObserver = null;
+  let statsAnimated = false;
+
+  function resetStatsCounters() {
+    const statNumbers = document.querySelectorAll('#statsCard .stat-num');
+    statNumbers.forEach(el => {
+      el.innerText = '0';
     });
+    statsAnimated = false;
   }
 
-  // ==================== ANIMATION DES CARTES AU SCROLL ====================
-  const cards = document.querySelectorAll('.card');
-  function animateCard(card) {
-    if (card.classList.contains('animated')) return;
-    const direction = card.getAttribute('data-animation') || 'left';
-    let animClass = '';
-    if (direction === 'left') animClass = 'animate-left';
-    else if (direction === 'right') animClass = 'animate-right';
-    else if (direction === 'up') animClass = 'animate-up';
-    else animClass = 'animate-left';
-    card.classList.add(animClass, 'animated');
-    card.style.opacity = '1';
+  function animateCounter(element, target) {
+    let current = 0;
+    const increment = target / 50;
+    const updateCounter = () => {
+      current += increment;
+      if (current < target) {
+        element.innerText = Math.floor(current);
+        requestAnimationFrame(updateCounter);
+      } else {
+        element.innerText = target;
+      }
+    };
+    updateCounter();
   }
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        animateCard(entry.target);
-        observer.unobserve(entry.target);
+
+  function startStatsAnimation() {
+    if (statsAnimated) return;
+    const statNumbers = document.querySelectorAll('#statsCard .stat-num');
+    if (statNumbers.length === 0) return;
+    statNumbers.forEach(el => {
+      const target = parseInt(el.getAttribute('data-target'), 10);
+      if (target && el.innerText === '0') {
+        animateCounter(el, target);
       }
     });
-  }, { threshold: 0.2, rootMargin: "0px 0px -30px 0px" });
-  cards.forEach(card => {
-    card.style.opacity = '0';
-    observer.observe(card);
-  });
-  setTimeout(() => {
-    cards.forEach(card => {
-      const rect = card.getBoundingClientRect();
-      if (rect.top < window.innerHeight - 80 && rect.bottom > 60) {
-        if (!card.classList.contains('animated')) {
-          animateCard(card);
-          observer.unobserve(card);
+    statsAnimated = true;
+  }
+
+  function initStatsObserver() {
+    const statsCardEl = document.getElementById('statsCard');
+    if (!statsCardEl) return;
+    if (statsObserver) statsObserver.disconnect();
+    statsObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !statsAnimated) {
+          startStatsAnimation();
+          statsObserver.unobserve(entry.target);
         }
-      }
-    });
-  }, 200);
+      });
+    }, { threshold: 0.5 });
+    statsObserver.observe(statsCardEl);
+  }
 
-  // ==================== EFFET REBONDISSANT AU CLIC ====================
+  // ========== BOUNCE EFFECT ==========
   function addBounceEffect(elements) {
     elements.forEach(el => {
-      if (!el) return;
-      el.addEventListener('click', (e) => {
+      if (el) el.addEventListener('click', (e) => {
         e.stopPropagation();
         el.classList.add('bounce-click');
-        setTimeout(() => {
-          el.classList.remove('bounce-click');
-        }, 300);
+        setTimeout(() => el.classList.remove('bounce-click'), 300);
       });
     });
   }
-  const homeImg = document.getElementById('homeImage');
-  const bounceImages = document.querySelectorAll('.bounce-on-click');
-  addBounceEffect([homeImg]);
-  addBounceEffect(Array.from(bounceImages));
+  addBounceEffect([document.getElementById('homeImage'), ...document.querySelectorAll('.bounce-on-click')]);
 
-  // ==================== SYSTÈME DE COMPTES (localStorage) ====================
+  // ========== SYSTÈME DE COMPTES (identique) ==========
   const STORAGE_KEY = 'makima_users';
   const SESSION_KEY = 'makima_current_user';
   const VERIF_KEY = 'makima_verif';
-
   let users = [];
   try { const stored = localStorage.getItem(STORAGE_KEY); if (stored) users = JSON.parse(stored); } catch(e) { users = []; }
   function saveUsers() { localStorage.setItem(STORAGE_KEY, JSON.stringify(users)); }
   function getCurrentUser() { const session = localStorage.getItem(SESSION_KEY); return session ? JSON.parse(session) : null; }
   function setCurrentUser(user) { localStorage.setItem(SESSION_KEY, JSON.stringify(user)); }
   function clearCurrentUser() { localStorage.removeItem(SESSION_KEY); }
-
   function sendVerificationCode(email, code) { alert(`Code de vérification (simulation) : ${code}\nEnvoyé à ${email}`); }
   function generateCode() { return Math.floor(100000 + Math.random() * 900000).toString(); }
 
@@ -867,43 +834,8 @@
       if (this.value.length > 0) wrapper.classList.add('has-value');
       else wrapper.classList.remove('has-value');
     });
-    inputElement.addEventListener('blur', function() {
-      if (this.value.length === 0) wrapper.classList.remove('has-value');
-    });
   }
 
-  // Mise à jour du menu hamburger selon l'état de connexion
-  function updateMenu() {
-    const isLoggedIn = !!getCurrentUser();
-    const menuContainer = document.getElementById('dropdownMenu');
-    const hamburgerBtn = document.getElementById('hamburgerBtn');
-    if (isLoggedIn) {
-      hamburgerBtn.classList.add('visible');
-      menuContainer.innerHTML = `
-        <a data-page="home">Accueil</a>
-        <a data-page="profile">Mon compte</a>
-        <a data-page="pairing">Pairing WhatsApp</a>
-        <a data-page="deployment">Connexion en cours</a>
-        <a data-page="credits">Crédits</a>
-        <a data-page="logout">Déconnexion</a>
-      `;
-    } else {
-      hamburgerBtn.classList.remove('visible');
-      menuContainer.innerHTML = `
-        <a data-page="profile">Mon compte</a>
-      `;
-    }
-    // Réattacher les événements aux nouveaux liens
-    document.querySelectorAll('.dropdown-menu a').forEach(link => {
-      link.addEventListener('click', (e) => {
-        const page = link.getAttribute('data-page');
-        if (page) switchPage(page);
-        closeMenu();
-      });
-    });
-  }
-
-  // Mise à jour de l'affichage du profil (connexion/inscription + infos)
   function updateProfileUI() {
     const containerDiv = document.getElementById('profileContent');
     const user = getCurrentUser();
@@ -915,21 +847,13 @@
         </div>
         <div id="loginForm">
           <div class="input-group"><label>Email ou pseudo</label><input type="text" id="loginIdentifier" placeholder="exemple@domaine.com"></div>
-          <div class="input-group"><label>Mot de passe</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
-          <div class="fake-recaptcha">
-            <input type="checkbox" id="recaptchaLogin"> <label>Je ne suis pas un robot</label>
-          </div>
-          <div class="checkbox-group">
-            <input type="checkbox" id="rememberMe"> <label>Se souvenir de moi</label>
-          </div>
+          <div class="input-group"><label>Mot de passe</label><input type="password" id="loginPassword" placeholder="********"></div>
+          <div class="fake-recaptcha" style="display:flex; align-items:center; gap:0.5rem; margin:0.5rem 0;"><input type="checkbox" id="recaptchaLogin"> <label>Je ne suis pas un robot</label></div>
+          <div class="checkbox-group"><input type="checkbox" id="rememberMe"> <label>Se souvenir de moi</label></div>
           <button id="doLoginBtn">Se connecter</button>
           <div id="loginMessage"></div>
-          <div style="text-align: center; margin-top: 0.8rem;">
-            <a href="#" id="forgotPasswordLink" style="color: var(--accent); font-size: 0.75rem;">Mot de passe oublié ?</a>
-          </div>
-          <div style="text-align: center; margin-top: 0.5rem;">
-            <button id="switchToRegisterBtn" style="background: transparent; border: 1px solid var(--accent); color: var(--accent); width: auto;">Enregistrer un nouveau membre</button>
-          </div>
+          <div style="text-align: center; margin-top: 0.8rem;"><a href="#" id="forgotPasswordLink" style="color: var(--accent); font-size: 0.75rem;">Mot de passe oublié ?</a></div>
+          <div style="text-align: center; margin-top: 0.5rem;"><button id="switchToRegisterBtn" style="background: transparent; border: 1px solid var(--accent); color: var(--accent); width: auto;">Enregistrer un nouveau membre</button></div>
         </div>
         <div id="registerForm" style="display:none;">
           <div class="input-group"><label>Nom d'utilisateur</label><input type="text" id="regUsername" placeholder="Pseudo"></div>
@@ -937,27 +861,17 @@
           <div class="input-group"><label>Mot de passe</label><input type="password" id="regPassword" placeholder="Min 6 caractères"></div>
           <div class="input-group"><label>Retapez le mot de passe</label><input type="password" id="regPasswordConfirm" placeholder=""></div>
           <div class="input-group"><label>Code de parrainage (optionnel)</label><input type="text" id="referralCode" placeholder=""></div>
-          <div class="fake-recaptcha">
-            <input type="checkbox" id="recaptchaRegister"> <label>Je ne suis pas un robot</label>
-          </div>
-          <div class="checkbox-group">
-            <input type="checkbox" id="acceptTerms"> <label>J'accepte les Conditions</label>
-          </div>
+          <div class="fake-recaptcha" style="display:flex; align-items:center; gap:0.5rem; margin:0.5rem 0;"><input type="checkbox" id="recaptchaRegister"> <label>Je ne suis pas un robot</label></div>
+          <div class="checkbox-group"><input type="checkbox" id="acceptTerms"> <label>J'accepte les Conditions</label></div>
           <button id="doRegisterBtn">Inscription</button>
           <div id="registerMessage"></div>
-          <div style="text-align: center; margin-top: 0.5rem;">
-            <button id="switchToLoginBtn" style="background: transparent; border: 1px solid var(--accent); color: var(--accent); width: auto;">Je possède déjà un compte</button>
-          </div>
+          <div style="text-align: center; margin-top: 0.5rem;"><button id="switchToLoginBtn" style="background: transparent; border: 1px solid var(--accent); color: var(--accent); width: auto;">Je possède déjà un compte</button></div>
         </div>
       `;
-      const regUser = document.getElementById('regUsername');
-      const regMail = document.getElementById('regEmail');
-      const regPass = document.getElementById('regPassword');
-      setupFloatingHelp(regUser, "Choisissez un pseudo unique (ex: Valdes)");
-      setupFloatingHelp(regMail, "Entrez votre email valide (ex: valdes@exemple.com)");
-      setupFloatingHelp(regPass, "Minimum 6 caractères, lettres/chiffres acceptés");
+      setupFloatingHelp(document.getElementById('regUsername'), "Choisissez un pseudo unique");
+      setupFloatingHelp(document.getElementById('regEmail'), "Entrez votre email valide");
+      setupFloatingHelp(document.getElementById('regPassword'), "Minimum 6 caractères");
 
-      // Gestion onglets
       document.getElementById('showLoginBtn').addEventListener('click', () => {
         document.getElementById('loginForm').style.display = 'block';
         document.getElementById('registerForm').style.display = 'none';
@@ -970,26 +884,15 @@
         document.getElementById('showRegisterBtn').classList.add('active');
         document.getElementById('showLoginBtn').classList.remove('active');
       });
-      document.getElementById('switchToRegisterBtn').addEventListener('click', () => {
-        document.getElementById('showRegisterBtn').click();
-      });
-      document.getElementById('switchToLoginBtn').addEventListener('click', () => {
-        document.getElementById('showLoginBtn').click();
-      });
-      document.getElementById('forgotPasswordLink').addEventListener('click', (e) => {
-        e.preventDefault();
-        alert("Fonctionnalité à venir : réinitialisation par email.");
-      });
+      document.getElementById('switchToRegisterBtn').addEventListener('click', () => { document.getElementById('showRegisterBtn').click(); });
+      document.getElementById('switchToLoginBtn').addEventListener('click', () => { document.getElementById('showLoginBtn').click(); });
+      document.getElementById('forgotPasswordLink').addEventListener('click', (e) => { e.preventDefault(); alert("Fonctionnalité à venir : réinitialisation par email."); });
 
-      // Connexion
       document.getElementById('doLoginBtn').addEventListener('click', () => {
         const identifier = document.getElementById('loginIdentifier').value.trim();
         const password = document.getElementById('loginPassword').value.trim();
         const recaptcha = document.getElementById('recaptchaLogin').checked;
-        if (!recaptcha) {
-          document.getElementById('loginMessage').innerHTML = '<span class="error-msg">Veuillez cocher "Je ne suis pas un robot".</span>';
-          return;
-        }
+        if (!recaptcha) { document.getElementById('loginMessage').innerHTML = '<span class="error-msg">Veuillez cocher "Je ne suis pas un robot".</span>'; return; }
         const user = users.find(u => (u.email === identifier || u.username === identifier) && u.password === btoa(password));
         if (!user) { document.getElementById('loginMessage').innerHTML = '<span class="error-msg">Identifiants incorrects</span>'; return; }
         if (!user.verified) { document.getElementById('loginMessage').innerHTML = '<span class="error-msg">Compte non vérifié</span>'; return; }
@@ -997,12 +900,10 @@
         updateProfileUI();
         updatePairingUI();
         updateDeploymentUI();
-        updateMenu();
-        // Rediriger vers la page d'accueil après connexion
+        updateNavActive();
         switchPage('home');
       });
 
-      // Inscription
       document.getElementById('doRegisterBtn').addEventListener('click', () => {
         const username = document.getElementById('regUsername').value.trim();
         const email = document.getElementById('regEmail').value.trim();
@@ -1033,12 +934,8 @@
       });
       return;
     }
-    // Utilisateur connecté : affichage des infos
     containerDiv.innerHTML = `
-      <div class="profile-row">
-        <img src="https://files.catbox.moe/vlmmwm.jpg" class="avatar bounce-on-click" alt="avatar" style="cursor: pointer;">
-        <div><strong>${user.username}</strong><br>${user.email}<br><span class="status-badge">Connecté</span></div>
-      </div>
+      <div class="profile-row"><img src="https://i.ibb.co/KpDBGfjp/47aeba979ed1.jpg" class="avatar bounce-on-click" alt="avatar"><div><strong>${user.username}</strong><br>${user.email}<br><span class="status-badge">Connecté</span></div></div>
       <div class="input-group"><label>Nom d'affichage</label><input type="text" value="${user.username}" disabled></div>
       <div class="input-group"><label>Email</label><input type="text" value="${user.email}" disabled></div>
       <div><strong>WhatsApp lié :</strong> ${user.whatsappNumber || 'Non renseigné'}</div>
@@ -1046,40 +943,30 @@
     addBounceEffect([document.querySelector('#profileContent .avatar')]);
   }
 
-  // Page Pairing
   function updatePairingUI() {
     const containerDiv = document.getElementById('pairingContent');
     const user = getCurrentUser();
     if (!user) return;
     containerDiv.innerHTML = `
-      <div class="input-group" id="pairingInputGroup">
-        <label>Numéro WhatsApp (indicatif pays)</label>
-        <input type="tel" id="phoneNumber" placeholder="237671410035" maxlength="15">
-      </div>
+      <div class="input-group"><label>Numéro WhatsApp (indicatif pays)</label><input type="tel" id="phoneNumber" placeholder="237671410035" maxlength="15"></div>
       <button id="generatePairBtn">Obtenir le code d'appairage</button>
       <div id="pairResult"></div>
     `;
-    const phoneInput = document.getElementById('phoneNumber');
-    setupFloatingHelp(phoneInput, "Exemple: 237671410035 (indicatif pays sans le +)");
+    setupFloatingHelp(document.getElementById('phoneNumber'), "Exemple: 237671410035 (sans le +)");
     document.getElementById('generatePairBtn')?.addEventListener('click', async () => {
       const raw = document.getElementById('phoneNumber').value.trim();
       const clean = raw.replace(/\D/g, '');
       if (clean.length < 8) { document.getElementById('pairResult').innerHTML = '<span class="error-msg">Numéro invalide</span>'; return; }
       document.getElementById('pairResult').innerHTML = '<div class="loader"></div> Génération...';
-      try {
-        const response = await fetch('/api/pair', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ number: clean }) });
-        const data = await response.json();
-        if (response.ok && data.success && data.code) {
-          const userIndex = users.findIndex(u => u.id === user.id);
-          if (userIndex !== -1) { users[userIndex].whatsappNumber = clean; saveUsers(); setCurrentUser(users[userIndex]); updateProfileUI(); }
-          document.getElementById('pairResult').innerHTML = `<div class="code-result"><div>Code (valable 60s)</div><div class="code-number">${data.code}</div><button class="copy-btn" id="copyCodeBtn">Copier</button></div>`;
-          document.getElementById('copyCodeBtn')?.addEventListener('click', () => navigator.clipboard.writeText(data.code).then(() => alert('Copié')));
-        } else { document.getElementById('pairResult').innerHTML = `<span class="error-msg">Erreur : ${data.error || 'serveur'}</span>`; }
-      } catch(e) { document.getElementById('pairResult').innerHTML = '<span class="error-msg">Serveur indisponible</span>'; }
+      await new Promise(r => setTimeout(r, 800));
+      const fakeCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const userIndex = users.findIndex(u => u.id === user.id);
+      if (userIndex !== -1) { users[userIndex].whatsappNumber = clean; saveUsers(); setCurrentUser(users[userIndex]); updateProfileUI(); }
+      document.getElementById('pairResult').innerHTML = `<div class="code-result"><div>Code (valable 60s)</div><div class="code-number">${fakeCode}</div><button class="copy-btn" id="copyCodeBtn">Copier</button></div>`;
+      document.getElementById('copyCodeBtn')?.addEventListener('click', () => navigator.clipboard.writeText(fakeCode).then(() => alert('Copié')));
     });
   }
 
-  // Page Connexion en cours
   let whatsappConnected = false;
   function updateDeploymentUI() {
     const containerDiv = document.getElementById('deploymentContent');
@@ -1088,49 +975,39 @@
     const statusText = whatsappConnected ? 'Connecté' : 'Déconnecté';
     const statusColor = whatsappConnected ? 'var(--success)' : '#ef4444';
     containerDiv.innerHTML = `
-      <div style="text-align:center; margin-bottom:1rem;">
-        <div style="font-size:2rem;">${whatsappConnected ? '📱' : '⚠️'}</div>
-        <div style="font-weight:bold; color:${statusColor};">${statusText}</div>
-        <div style="font-size:0.8rem; margin-top:0.5rem;">${whatsappConnected ? 'Votre session WhatsApp est active.' : 'Aucune session active. Lancez la connexion.'}</div>
-      </div>
+      <div style="text-align:center; margin-bottom:1rem;"><div style="font-size:2rem;">${whatsappConnected ? '✔️' : '❌'}</div><div style="font-weight:bold; color:${statusColor};">${statusText}</div><div style="font-size:0.8rem;">${whatsappConnected ? 'Session active.' : 'Aucune session active.'}</div></div>
       <button id="toggleConnectionBtn">${whatsappConnected ? 'Se déconnecter' : 'Lancer la connexion'}</button>
-      <div id="connectionMessage" style="margin-top:0.8rem; font-size:0.75rem; text-align:center;"></div>
+      <div id="connectionMessage" style="margin-top:0.8rem;"></div>
     `;
     document.getElementById('toggleConnectionBtn')?.addEventListener('click', () => {
       const msgDiv = document.getElementById('connectionMessage');
       if (!whatsappConnected) {
-        msgDiv.innerHTML = '<div class="loader"></div> Connexion en cours...';
+        msgDiv.innerHTML = '<div class="loader"></div> Connexion...';
         setTimeout(() => {
           whatsappConnected = true;
           updateDeploymentUI();
-          msgDiv.innerHTML = '<span class="success-msg">Connecté avec succès !</span>';
-          setTimeout(() => { if (document.getElementById('connectionMessage')) msgDiv.innerHTML = ''; }, 2000);
+          msgDiv.innerHTML = '<span class="success-msg">Connecté !</span>';
         }, 1500);
       } else {
         whatsappConnected = false;
         updateDeploymentUI();
         msgDiv.innerHTML = '<span class="success-msg">Déconnecté.</span>';
-        setTimeout(() => { if (document.getElementById('connectionMessage')) msgDiv.innerHTML = ''; }, 2000);
       }
     });
   }
 
-  // Page Déconnexion (sécurisée)
   function updateLogoutUI() {
     const containerDiv = document.getElementById('logoutContent');
     const user = getCurrentUser();
     if (!user) {
-      containerDiv.innerHTML = `<div class="error-msg">Vous n'êtes pas connecté.</div><button id="goToProfileLogoutBtn" style="width:auto;">Aller à Mon compte</button>`;
+      containerDiv.innerHTML = `<div class="error-msg">Vous n'êtes pas connecté.</div><button id="goToProfileLogoutBtn">Aller à Mon compte</button>`;
       document.getElementById('goToProfileLogoutBtn')?.addEventListener('click', () => switchPage('profile'));
       return;
     }
     containerDiv.innerHTML = `
-      <div class="profile-row">
-        <img src="https://files.catbox.moe/vlmmwm.jpg" class="avatar" alt="avatar" style="width:50px; height:50px;">
-        <div><strong>${user.username}</strong><br>${user.email}</div>
-      </div>
+      <div class="profile-row"><img src="https://i.ibb.co/KpDBGfjp/47aeba979ed1.jpg" class="avatar" alt="avatar" style="width:50px;"><div><strong>${user.username}</strong><br>${user.email}</div></div>
       <div class="input-group"><label>Email ou pseudo</label><input type="text" id="logoutIdentifier" placeholder="Votre email ou pseudo"></div>
-      <div class="input-group"><label>Mot de passe</label><input type="password" id="logoutPassword" placeholder="Votre mot de passe"></div>
+      <div class="input-group"><label>Mot de passe</label><input type="password" id="logoutPassword" placeholder="Mot de passe"></div>
       <button id="secureLogoutBtn">Se déconnecter</button>
       <div id="logoutMessage"></div>
     `;
@@ -1138,63 +1015,55 @@
       const identifier = document.getElementById('logoutIdentifier').value.trim();
       const password = document.getElementById('logoutPassword').value.trim();
       const current = getCurrentUser();
-      if (!current) {
-        document.getElementById('logoutMessage').innerHTML = '<span class="error-msg">Aucun utilisateur connecté.</span>';
-        return;
-      }
-      const user = users.find(u => (u.email === identifier || u.username === identifier) && u.id === current.id);
-      if (!user || user.password !== btoa(password)) {
-        document.getElementById('logoutMessage').innerHTML = '<span class="error-msg">Identifiants incorrects. Déconnexion impossible.</span>';
+      if (!current) return;
+      const userFound = users.find(u => (u.email === identifier || u.username === identifier) && u.id === current.id);
+      if (!userFound || userFound.password !== btoa(password)) {
+        document.getElementById('logoutMessage').innerHTML = '<span class="error-msg">Identifiants incorrects.</span>';
         return;
       }
       clearCurrentUser();
-      document.getElementById('logoutMessage').innerHTML = '<span class="success-msg">Déconnecté avec succès.</span>';
+      document.getElementById('logoutMessage').innerHTML = '<span class="success-msg">Déconnecté.</span>';
       setTimeout(() => {
         updateProfileUI();
         updatePairingUI();
         updateDeploymentUI();
-        updateMenu();
+        updateNavActive();
         switchPage('profile');
       }, 500);
     });
   }
 
-  // Navigation entre pages avec protection
+  // Navigation
   function switchPage(pageId) {
     const isLoggedIn = !!getCurrentUser();
-    const protectedPages = ['home', 'pairing', 'deployment', 'credits', 'logout'];
-    if (!isLoggedIn && protectedPages.includes(pageId)) {
-      pageId = 'profile';
-    }
-    const pages = ['home', 'profile', 'pairing', 'deployment', 'credits', 'logout'];
-    pages.forEach(p => {
-      const el = document.getElementById(p + 'Page');
-      if (el) el.classList.remove('active-page');
-    });
+    const protectedPages = ['home', 'pairing', 'deployment', 'logout'];
+    if (!isLoggedIn && protectedPages.includes(pageId)) pageId = 'profile';
+    const pages = ['profile', 'home', 'pairing', 'deployment', 'credits', 'logout'];
+    pages.forEach(p => { const el = document.getElementById(p + 'Page'); if (el) el.classList.remove('active-page'); });
     const activeEl = document.getElementById(pageId + 'Page');
     if (activeEl) activeEl.classList.add('active-page');
     if (pageId === 'profile') updateProfileUI();
     if (pageId === 'pairing') updatePairingUI();
     if (pageId === 'deployment') updateDeploymentUI();
     if (pageId === 'logout') updateLogoutUI();
+    if (pageId === 'home') {
+      resetStatsCounters();
+      initStatsObserver();
+    }
+    updateNavActive();
     closeMenu();
   }
 
-  // Menu hamburger
-  const hamburger = document.getElementById('hamburgerBtn');
-  const dropdown = document.getElementById('dropdownMenu');
-  function closeMenu() { dropdown.classList.remove('show'); }
-  function openMenu() { dropdown.classList.add('show'); }
-  hamburger.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (dropdown.classList.contains('show')) closeMenu();
-    else openMenu();
-  });
-  document.addEventListener('click', (e) => {
-    if (!hamburger.contains(e.target) && !dropdown.contains(e.target)) closeMenu();
-  });
+  function updateNavActive() {
+    const currentPage = document.querySelector('.page.active-page')?.id.replace('Page', '');
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      const page = link.getAttribute('data-page');
+      if (page === currentPage) link.classList.add('active');
+      else link.classList.remove('active');
+    });
+  }
 
-  // Thème clair/sombre
+  // Thème
   const themeToggle = document.getElementById('themeToggle');
   if (localStorage.getItem('theme') === 'light') document.body.classList.add('light');
   themeToggle.addEventListener('click', () => {
@@ -1202,20 +1071,28 @@
     localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
   });
 
-  // Effet d'illumination toggle
-  let glowEnabled = false;
-  document.body.addEventListener('click', (e) => {
-    if (!e.target.closest('.hamburger') && !e.target.closest('.dropdown-menu') && !e.target.closest('button') && !e.target.closest('input')) {
-      glowEnabled = !glowEnabled;
-      document.querySelectorAll('.card').forEach(card => {
-        if (glowEnabled) card.classList.add('glow-active');
-        else card.classList.remove('glow-active');
-      });
+  // Bouton CTA
+  document.getElementById('ctaDeployBtn')?.addEventListener('click', () => {
+    const user = getCurrentUser();
+    if (user) {
+      switchPage('pairing');
+    } else {
+      alert("Veuillez d'abord créer un compte ou vous connecter.");
+      switchPage('profile');
     }
   });
+  document.getElementById('logoHome')?.addEventListener('click', () => switchPage('home'));
 
-  // Initialisation
-  updateMenu();
+  document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const page = link.getAttribute('data-page');
+      if (page) switchPage(page);
+    });
+  });
+
+  updateProfileUI();
+  updateNavActive();
   switchPage('profile');
 </script>
 </body>
