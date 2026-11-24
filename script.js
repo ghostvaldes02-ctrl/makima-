@@ -145,96 +145,112 @@ function initCardDeck(deckId, slidesData) {
 }
 
 /* ========================================== */
-/* LUCIOLES & LAMPE                           */
+/* LAMPE & TOGGLE (PC + MOBILE FIABLE)        */
 /* ========================================== */
-(function initFireflies() {
-  const container = document.getElementById("fireflies");
-  if (!container) return;
-
-  const count = 25;
-  for (let i = 0; i < count; i++) {
-    const f = document.createElement("div");
-    f.className = "firefly";
-
-    const size = 2 + Math.random() * 4;
-    f.style.width = size + "px";
-    f.style.height = size + "px";
-
-    const startX = Math.random() * 100;
-    const startY = Math.random() * 100;
-    f.style.left = startX + "%";
-    f.style.top = startY + "%";
-
-    const randOffset = () => (Math.random() - 0.5) * 160 + "px";
-    f.style.setProperty("--x1", randOffset());
-    f.style.setProperty("--y1", randOffset());
-    f.style.setProperty("--x2", randOffset());
-    f.style.setProperty("--y2", randOffset());
-    f.style.setProperty("--x3", randOffset());
-    f.style.setProperty("--y3", randOffset());
-    f.style.setProperty("--x4", randOffset());
-    f.style.setProperty("--y4", randOffset());
-    f.style.setProperty("--x5", randOffset());
-    f.style.setProperty("--y5", randOffset());
-
-    f.style.setProperty("--duration", 8 + Math.random() * 10 + "s");
-    f.style.setProperty("--delay", -Math.random() * 10 + "s");
-
-    container.appendChild(f);
-  }
-})();
-
 let isRoomOn = false;
 const room = document.getElementById("room");
 const handle = document.getElementById("stringHandle");
 const path = document.getElementById("stringPath");
+const lampToggleSwitch = document.getElementById("lampToggleSwitch");
+const lampToggleLabel = document.getElementById("lampToggleLabel");
+const lampPrompt = document.getElementById("lampPrompt");
 
 let isDragging = false;
 let startY = 0;
 let currentPullY = 0;
-const pullThreshold = 50;
+let movedEnoughToDrag = false;
+const pullThreshold = 26;
 
 function updateStringPath(pullY) {
   const d = `M 0 0 L 0 ${80 + pullY}`;
   if (path) path.setAttribute("d", d);
 }
 
-function toggleRoomLight() {
-  isRoomOn = !isRoomOn;
+function setRoomLightState(state) {
+  isRoomOn = Boolean(state);
   if (room) {
     room.classList.toggle("on", isRoomOn);
   }
+  if (lampToggleSwitch) {
+    lampToggleSwitch.checked = isRoomOn;
+  }
+  if (lampToggleLabel) {
+    lampToggleLabel.textContent = isRoomOn ? "Lampe allumée" : "Lampe éteinte";
+  }
+}
+
+function toggleRoomLight() {
+  setRoomLightState(!isRoomOn);
+}
+
+if (lampToggleSwitch) {
+  lampToggleSwitch.addEventListener("change", (e) => {
+    setRoomLightState(e.target.checked);
+  });
+}
+
+if (lampPrompt) {
+  lampPrompt.addEventListener("click", () => {
+    toggleRoomLight();
+  });
+}
+
+function getClientY(e) {
+  if (typeof e.clientY === "number") return e.clientY;
+  if (e.touches && e.touches[0]) return e.touches[0].clientY;
+  if (e.changedTouches && e.changedTouches[0]) return e.changedTouches[0].clientY;
+  return 0;
 }
 
 if (handle) {
   handle.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
     isDragging = true;
-    startY = e.clientY;
+    movedEnoughToDrag = false;
+    startY = getClientY(e);
+    currentPullY = 0;
     handle.classList.add("dragging");
-    handle.setPointerCapture(e.pointerId);
+    try {
+      handle.setPointerCapture(e.pointerId);
+    } catch (_) {}
   });
 
   handle.addEventListener("pointermove", (e) => {
     if (!isDragging) return;
-    const deltaY = Math.max(0, Math.min(120, e.clientY - startY));
+    e.preventDefault();
+    const deltaY = Math.max(0, Math.min(110, getClientY(e) - startY));
+    if (deltaY > 6) movedEnoughToDrag = true;
     currentPullY = deltaY;
     handle.style.transform = `translateY(${deltaY}px)`;
     updateStringPath(deltaY);
   });
 
-  handle.addEventListener("pointerup", (e) => {
+  function finishPull(e) {
     if (!isDragging) return;
     isDragging = false;
     handle.classList.remove("dragging");
-    handle.releasePointerCapture(e.pointerId);
+    try {
+      handle.releasePointerCapture(e.pointerId);
+    } catch (_) {}
 
-    if (currentPullY >= pullThreshold) {
+    if (currentPullY >= pullThreshold || !movedEnoughToDrag) {
       toggleRoomLight();
     }
 
     currentPullY = 0;
+    movedEnoughToDrag = false;
     handle.style.transform = "";
     updateStringPath(0);
+  }
+
+  handle.addEventListener("pointerup", finishPull);
+  handle.addEventListener("pointercancel", finishPull);
+
+  handle.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      toggleRoomLight();
+    }
   });
 }
 
@@ -330,9 +346,8 @@ function secureLogout() {
       if (app) app.style.display = "none";
       if (room) {
         room.style.display = "flex";
-        room.classList.remove("on");
       }
-      isRoomOn = false;
+      setRoomLightState(false);
     }
   });
 }
@@ -373,10 +388,11 @@ function closeMobileMenu() {
 /* INITIALISATION DES PILES DE CARTES         */
 /* ========================================== */
 var makimaImages = [
-  { src: "https://files.catbox.moe/bfeonj.jpg", alt: "Makima 1" },
-  { src: "https://files.catbox.moe/thwtsh.jpg", alt: "Makima 2" },
-  { src: "https://files.catbox.moe/rir6ym.jpg", alt: "Makima 3" },
-  { src: "https://files.catbox.moe/xowv2h.jpg", alt: "Makima 4" }
+  { src: "image/1.jpg", alt: "Makima 1" },
+  { src: "image/2.jpg", alt: "Makima 2" },
+  { src: "image/3.jpg", alt: "Makima 3" },
+  { src: "image/4.jpg", alt: "Makima 4" },
+  { src: "image/5.jpg", alt: "Makima 5" }
 ];
 
 initCardDeck("homeDeck", makimaImages);
