@@ -6,7 +6,7 @@
   <title>Makima m-dx | CodeByGaurav</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="style.css">
@@ -32,14 +32,8 @@
   <!-- ========================================== -->
   <main class="room" id="room">
     <div class="room-light" id="roomLight"></div>
-    <div class="fireflies" id="fireflies"></div>
 
     <section class="lamp-side">
-      <div class="prompt" id="lampPrompt">
-        Tirez sur la corde pour allumer
-        <i></i>
-      </div>
-
       <div class="lamp-container" id="lampContainer">
         <div class="lamp-glow"></div>
         <div class="lamp-head"></div>
@@ -52,7 +46,22 @@
           <path id="stringPath" d="M 0 0 L 0 80"></path>
         </svg>
 
-        <div class="string-handle" id="stringHandle" aria-label="Tirer la corde de la lampe"></div>
+        <div class="string-handle" id="stringHandle" role="button" tabindex="0" aria-label="Tirer la corde de la lampe"></div>
+      </div>
+
+      <div class="lamp-controls-below">
+        <div class="prompt" id="lampPrompt">
+          Tirez sur la corde pour allumer
+          <i></i>
+        </div>
+
+        <label class="pro-toggle" for="lampToggleSwitch">
+          <span class="pro-toggle-label" id="lampToggleLabel">Lampe éteinte</span>
+          <input type="checkbox" id="lampToggleSwitch" aria-label="Allumer ou éteindre la lampe">
+          <span class="pro-toggle-track">
+            <span class="pro-toggle-thumb"></span>
+          </span>
+        </label>
       </div>
     </section>
 
@@ -95,7 +104,10 @@
           </button>
         </div>
 
-        <p class="auth-switch">Pas de compte ? <a href="#" onclick="toggleAuthForms('signup'); return false;">Créer un compte</a></p>
+        <p class="auth-switch">
+          Pas de compte ?
+          <button type="button" class="mode-switch-btn" onclick="toggleAuthForms('signup')">Créer un compte</button>
+        </p>
       </form>
 
       <!-- Formulaire d'Inscription (Caché par défaut) -->
@@ -149,7 +161,10 @@
           </button>
         </div>
 
-        <p class="auth-switch">Déjà inscrit ? <a href="#" onclick="toggleAuthForms('login'); return false;">Se connecter</a></p>
+        <p class="auth-switch">
+          Déjà inscrit ?
+          <button type="button" class="mode-switch-btn" onclick="toggleAuthForms('login')">Se connecter</button>
+        </p>
       </form>
     </section>
   </main>
@@ -271,7 +286,7 @@
         <div class="eyebrow"><i class="fas fa-user-circle"></i> <span class="glowing-dot"></span> Espace Membre</div>
         <h2 class="section-title">Mon compte</h2>
         <div class="glass-card profile-card">
-          <img src="https://files.catbox.moe/bfeonj.jpg" alt="avatar" class="avatar-img">
+          <img src="image/1.jpg" alt="avatar" class="avatar-img">
           <div id="profileContent" class="profile-content"></div>
         </div>
         <div class="mt-2">
