@@ -20,10 +20,11 @@
   --border: rgba(255, 255, 255, 0.12);
 }
 
+/* CORRECTION : min-height à la place de height, et overflow-x hidden */
 html, body {
   width: 100%;
-  height: 100%;
-  overflow: hidden;
+  min-height: 100%;
+  overflow-x: hidden; 
 }
 
 body {
@@ -270,7 +271,7 @@ html.introing body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 14px;
+  gap: 18px;
   z-index: 5;
   padding: 16px;
 }
@@ -428,11 +429,13 @@ html.introing body {
   transition: none;
 }
 
+/* Zone sous le pied de la lampe : texte + toggle professionnel */
 .lamp-controls-below {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 6px;
+  gap: 12px;
+  margin-top: 8px;
   z-index: 10;
 }
 
@@ -443,6 +446,10 @@ html.introing body {
   letter-spacing: 0.02em;
   text-align: center;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
   opacity: 1;
   transition: opacity 0.45s ease, transform 0.45s ease, color 0.3s ease;
 }
@@ -452,8 +459,88 @@ html.introing body {
 }
 
 .room.on .prompt {
-  opacity: 0.5;
+  opacity: 0.45;
   color: var(--accent);
+}
+
+.prompt i {
+  width: 2px;
+  height: 24px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+  animation: promptArrow 2s infinite;
+}
+
+@keyframes promptArrow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+/* Bouton toggle professionnel */
+.pro-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 214, 0, 0.24);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.25s, background-color 0.25s, box-shadow 0.25s;
+}
+
+.pro-toggle:hover {
+  border-color: rgba(255, 214, 0, 0.55);
+  background: rgba(255, 214, 0, 0.07);
+}
+
+.pro-toggle-label {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #e8e8e8;
+  letter-spacing: 0.02em;
+}
+
+.pro-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.pro-toggle-track {
+  position: relative;
+  width: 48px;
+  height: 26px;
+  border-radius: 999px;
+  background: #242424;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  transition: background-color 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease;
+  flex-shrink: 0;
+}
+
+.pro-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #b8b8b8;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.65);
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.28s ease;
+}
+
+.pro-toggle input:checked + .pro-toggle-track {
+  background: rgba(255, 214, 0, 0.24);
+  border-color: var(--accent);
+  box-shadow: 0 0 16px rgba(255, 214, 0, 0.25);
+}
+
+.pro-toggle input:checked + .pro-toggle-track .pro-toggle-thumb {
+  transform: translateX(22px);
+  background: var(--accent);
 }
 
 /* --- LOGIN SIDE (Formulaire) --- */
@@ -1122,71 +1209,50 @@ footer { border-top: 1px solid var(--border); padding: 3rem 2rem; text-align: ce
 .footer-links a:hover { color: var(--accent); }
 .footer-text { font-size: 0.85rem; color: rgba(255, 255, 255, 0.35); }
 
-/* Responsive Android / Mobile */
+/* ========================================== */
+/* RESPONSIVE (CORRIGÉ POUR MOBILE)           */
+/* ========================================== */
 @media (max-width: 900px) {
-  .room {
-    flex-direction: column;
-    overflow-y: auto;
-    height: auto;
-    min-height: 100dvh;
-    padding-bottom: 24px;
+  body {
+    overflow-y: auto; /* Active le défilement vertical sur mobile */
   }
-  .lamp-side {
-    flex: 0 0 auto;
-    min-height: 245px;
-    gap: 6px;
-    padding: 14px 12px 4px;
+
+  .room { 
+    flex-direction: column; 
+    overflow-y: visible; /* Laisse le body gérer le défilement */
+    height: auto; 
+    min-height: 100vh; 
+    min-height: 100dvh; 
   }
-  .lamp-container {
-    transform: scale(0.68);
-    transform-origin: center top;
-    margin-bottom: -102px;
+
+  .lamp-side { 
+    flex: 0 0 auto; 
+    min-height: 260px; /* Hauteur réduite de la zone de la lampe (était 390px) */
+    padding-top: 10px; 
   }
-  .lamp-controls-below {
-    margin-top: 0;
+
+  .lamp-container { 
+    transform: scale(0.7); /* Réduit la taille de la lampe pour gagner de la place */
+    margin-bottom: -40px; /* Remonte légèrement le formulaire */
   }
-  .prompt {
-    font-size: 0.88rem;
+
+  .login-side { 
+    padding: 10px 16px 60px; /* Ajuste les marges (espace en bas pour le scroll) */
+    flex: 0 0 auto; 
   }
-  .login-side {
-    padding: 8px 14px 28px;
-    flex: 0 0 auto;
-    width: 100%;
+
+  .login-card { 
+    max-width: 440px; 
+    padding: 24px 20px; 
+    /* Change l'animation de X à Y pour éviter le débordement horizontal */
+    transform: translateY(30px); 
   }
-  .login-card {
-    max-width: 420px;
-    padding: 20px 16px;
-    gap: 11px;
-    border-radius: 20px;
+
+  /* Quand la lampe est allumée sur mobile, le formulaire glisse du bas vers le haut */
+  .room.on .login-card {
+    transform: translateY(0);
   }
-  .login-heading h2 {
-    font-size: 1.55rem;
-    margin-bottom: 3px;
-  }
-  .login-heading p {
-    font-size: 0.82rem;
-  }
-  .inputs {
-    gap: 9px;
-  }
-  .input-wrap input {
-    padding: 11px 12px 11px 40px;
-    border-radius: 13px;
-    font-size: 0.88rem;
-  }
-  .sign-in {
-    padding: 11px 16px;
-    border-radius: 13px;
-    font-size: 0.92rem;
-    margin-top: 2px;
-  }
-  .social-btn {
-    padding: 9px 10px;
-    font-size: 0.82rem;
-  }
-  .auth-switch {
-    font-size: 0.82rem;
-  }
+
   .nav-right { display: none; }
   .hamburger { display: flex; }
   .card-stack-wrap { justify-content: center; }
@@ -1194,10 +1260,12 @@ footer { border-top: 1px solid var(--border); padding: 3rem 2rem; text-align: ce
   .connect-panel { padding: 1.5rem; }
   .phone-box { flex-direction: column; }
 }
+
 @media (max-height: 650px) and (min-width: 901px) {
   .lamp-container { transform: scale(0.8); }
   .login-card { padding: 28px; gap: 14px; }
 }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
