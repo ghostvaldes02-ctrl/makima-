@@ -33,6 +33,8 @@
     ["BY THE DARKNESS", "t"]
   ];
   var markEl = document.getElementById("mark");
+  
+  // Génération du texte
   if (markEl) {
     markEl.innerHTML = groups.map(function (g) {
       var letters = g[0].split("").map(function (c) {
@@ -43,22 +45,8 @@
     }).join("");
   }
 
-  function fit() {
-    if (!markEl || !markEl.parentNode) return;
-    markEl.style.fontSize = "";
-    var w = markEl.offsetWidth;
-    var max = window.innerWidth * 0.86;
-    if (w > max && w > 0) {
-      markEl.style.fontSize = (parseFloat(getComputedStyle(markEl).fontSize) * max / w) + "px";
-    }
-  }
-
-  fit();
-  window.addEventListener("resize", fit);
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(fit);
-  }
-
+  // On laisse le CSS gérer la taille du texte (clamp) et on ne bloque plus le script
+  
   h.classList.add("introing");
   timer = setTimeout(end, 6200);
 
