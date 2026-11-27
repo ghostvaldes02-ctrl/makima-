@@ -270,7 +270,7 @@ html.introing body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 18px;
+  gap: 14px;
   z-index: 5;
   padding: 16px;
 }
@@ -428,13 +428,11 @@ html.introing body {
   transition: none;
 }
 
-/* Zone sous le pied de la lampe : texte + toggle professionnel */
 .lamp-controls-below {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  margin-top: 8px;
+  margin-top: 6px;
   z-index: 10;
 }
 
@@ -445,10 +443,6 @@ html.introing body {
   letter-spacing: 0.02em;
   text-align: center;
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
   opacity: 1;
   transition: opacity 0.45s ease, transform 0.45s ease, color 0.3s ease;
 }
@@ -458,88 +452,8 @@ html.introing body {
 }
 
 .room.on .prompt {
-  opacity: 0.45;
+  opacity: 0.5;
   color: var(--accent);
-}
-
-.prompt i {
-  width: 2px;
-  height: 24px;
-  background: linear-gradient(to bottom, var(--accent), transparent);
-  animation: promptArrow 2s infinite;
-}
-
-@keyframes promptArrow {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(6px); }
-}
-
-/* Bouton toggle professionnel */
-.pro-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 14px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 214, 0, 0.24);
-  cursor: pointer;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  transition: border-color 0.25s, background-color 0.25s, box-shadow 0.25s;
-}
-
-.pro-toggle:hover {
-  border-color: rgba(255, 214, 0, 0.55);
-  background: rgba(255, 214, 0, 0.07);
-}
-
-.pro-toggle-label {
-  font-size: 0.84rem;
-  font-weight: 700;
-  color: #e8e8e8;
-  letter-spacing: 0.02em;
-}
-
-.pro-toggle input {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.pro-toggle-track {
-  position: relative;
-  width: 48px;
-  height: 26px;
-  border-radius: 999px;
-  background: #242424;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  transition: background-color 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease;
-  flex-shrink: 0;
-}
-
-.pro-toggle-thumb {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #b8b8b8;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.65);
-  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.28s ease;
-}
-
-.pro-toggle input:checked + .pro-toggle-track {
-  background: rgba(255, 214, 0, 0.24);
-  border-color: var(--accent);
-  box-shadow: 0 0 16px rgba(255, 214, 0, 0.25);
-}
-
-.pro-toggle input:checked + .pro-toggle-track .pro-toggle-thumb {
-  transform: translateX(22px);
-  background: var(--accent);
 }
 
 /* --- LOGIN SIDE (Formulaire) --- */
@@ -1208,13 +1122,71 @@ footer { border-top: 1px solid var(--border); padding: 3rem 2rem; text-align: ce
 .footer-links a:hover { color: var(--accent); }
 .footer-text { font-size: 0.85rem; color: rgba(255, 255, 255, 0.35); }
 
-/* Responsive */
+/* Responsive Android / Mobile */
 @media (max-width: 900px) {
-  .room { flex-direction: column; overflow-y: auto; height: auto; min-height: 100vh; }
-  .lamp-side { flex: 0 0 auto; min-height: 390px; padding-top: 28px; }
-  .lamp-container { transform: scale(0.95); }
-  .login-side { padding: 20px 20px 48px; flex: 0 0 auto; }
-  .login-card { max-width: 440px; padding: 28px 22px; }
+  .room {
+    flex-direction: column;
+    overflow-y: auto;
+    height: auto;
+    min-height: 100dvh;
+    padding-bottom: 24px;
+  }
+  .lamp-side {
+    flex: 0 0 auto;
+    min-height: 245px;
+    gap: 6px;
+    padding: 14px 12px 4px;
+  }
+  .lamp-container {
+    transform: scale(0.68);
+    transform-origin: center top;
+    margin-bottom: -102px;
+  }
+  .lamp-controls-below {
+    margin-top: 0;
+  }
+  .prompt {
+    font-size: 0.88rem;
+  }
+  .login-side {
+    padding: 8px 14px 28px;
+    flex: 0 0 auto;
+    width: 100%;
+  }
+  .login-card {
+    max-width: 420px;
+    padding: 20px 16px;
+    gap: 11px;
+    border-radius: 20px;
+  }
+  .login-heading h2 {
+    font-size: 1.55rem;
+    margin-bottom: 3px;
+  }
+  .login-heading p {
+    font-size: 0.82rem;
+  }
+  .inputs {
+    gap: 9px;
+  }
+  .input-wrap input {
+    padding: 11px 12px 11px 40px;
+    border-radius: 13px;
+    font-size: 0.88rem;
+  }
+  .sign-in {
+    padding: 11px 16px;
+    border-radius: 13px;
+    font-size: 0.92rem;
+    margin-top: 2px;
+  }
+  .social-btn {
+    padding: 9px 10px;
+    font-size: 0.82rem;
+  }
+  .auth-switch {
+    font-size: 0.82rem;
+  }
   .nav-right { display: none; }
   .hamburger { display: flex; }
   .card-stack-wrap { justify-content: center; }
